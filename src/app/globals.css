@@ -2,10 +2,303 @@
 @import "@heroui/styles";
 
 :root {
-}
-
-@theme inline {
+  color-scheme: dark;
 }
 
 body {
+  background: #0a0a0a;
+  color: #fff;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+}
+
+@keyframes flicker-master {
+  0% {
+    opacity: 1;
+  }
+  18% {
+    opacity: 1;
+  }
+  18.5% {
+    opacity: 0.1;
+  }
+  19% {
+    opacity: 1;
+  }
+  19.4% {
+    opacity: 0.3;
+  }
+  19.8% {
+    opacity: 1;
+  }
+  35% {
+    opacity: 1;
+  }
+  35.5% {
+    opacity: 0;
+  }
+  37% {
+    opacity: 0;
+  }
+  37.2% {
+    opacity: 0.6;
+  }
+  37.4% {
+    opacity: 0.1;
+  }
+  37.7% {
+    opacity: 0.8;
+  }
+  38% {
+    opacity: 0.05;
+  }
+  38.5% {
+    opacity: 0.9;
+  }
+  39% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 1;
+  }
+  60.3% {
+    opacity: 0.7;
+  }
+  60.6% {
+    opacity: 1;
+  }
+  61% {
+    opacity: 0.4;
+  }
+  61.3% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  75.3% {
+    opacity: 0;
+  }
+  80% {
+    opacity: 0;
+  }
+  80.5% {
+    opacity: 0.15;
+  }
+  81% {
+    opacity: 0;
+  }
+  83% {
+    opacity: 0;
+  }
+  83.5% {
+    opacity: 1;
+  }
+  84% {
+    opacity: 0.5;
+  }
+  84.5% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes text-flicker {
+  0% {
+    transform: translateX(0);
+    text-shadow:
+      0 0 8px #fff,
+      0 0 20px #fff,
+      0 0 40px rgba(255, 255, 255, 0.4);
+  }
+  18% {
+    transform: translateX(0);
+    text-shadow:
+      0 0 8px #fff,
+      0 0 20px #fff,
+      0 0 40px rgba(255, 255, 255, 0.4);
+  }
+  18.5% {
+    transform: translateX(-2px);
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+  }
+  19% {
+    transform: translateX(0);
+    text-shadow:
+      0 0 8px #fff,
+      0 0 20px #fff,
+      0 0 40px rgba(255, 255, 255, 0.4);
+  }
+  35.5% {
+    transform: translateX(3px);
+    text-shadow: none;
+  }
+  37% {
+    transform: translateX(3px);
+    text-shadow: none;
+  }
+  37.5% {
+    transform: translateX(-1px);
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+  }
+  38.5% {
+    transform: translateX(0);
+    text-shadow:
+      0 0 8px #fff,
+      0 0 20px #fff,
+      0 0 40px rgba(255, 255, 255, 0.4);
+  }
+  60.3% {
+    transform: translateX(2px);
+  }
+  60.6% {
+    transform: translateX(0);
+  }
+  75.3% {
+    transform: translateX(-3px);
+    text-shadow: none;
+  }
+  83.5% {
+    transform: translateX(0);
+    text-shadow:
+      0 0 8px #fff,
+      0 0 20px #fff,
+      0 0 40px rgba(255, 255, 255, 0.4);
+  }
+  100% {
+    transform: translateX(0);
+    text-shadow:
+      0 0 8px #fff,
+      0 0 20px #fff,
+      0 0 40px rgba(255, 255, 255, 0.4);
+  }
+}
+
+@keyframes ghost-text {
+  0%,
+  18%,
+  39%,
+  60%,
+  84%,
+  100% {
+    opacity: 0;
+  }
+  35.5%,
+  37%,
+  75.3%,
+  83% {
+    opacity: 1;
+  }
+}
+
+@keyframes triangle-glitch {
+  0% {
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 6px #fff);
+  }
+  18.5% {
+    transform: scale(0.97) rotate(-1deg);
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
+  }
+  19% {
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 6px #fff);
+  }
+  35.5% {
+    transform: scale(1.03) skewX(2deg);
+    filter: none;
+  }
+  37% {
+    transform: scale(1.03) skewX(2deg);
+    filter: none;
+  }
+  38.5% {
+    transform: scale(1) skewX(0deg);
+    filter: drop-shadow(0 0 6px #fff);
+  }
+  75.3% {
+    transform: scale(0.95) skewX(-3deg);
+    filter: none;
+  }
+  83.5% {
+    transform: scale(1) skewX(0deg);
+    filter: drop-shadow(0 0 6px #fff);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 6px #fff);
+  }
+}
+
+@keyframes tagline-flicker {
+  0%,
+  18% {
+    opacity: 0.3;
+  }
+  18.5% {
+    opacity: 0;
+  }
+  19.5%,
+  35% {
+    opacity: 0.3;
+  }
+  35.5%,
+  39% {
+    opacity: 0;
+  }
+  39.5%,
+  100% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes status-flicker {
+  0%,
+  34% {
+    opacity: 1;
+  }
+  35% {
+    opacity: 0;
+  }
+  39.5%,
+  74% {
+    opacity: 1;
+  }
+  75%,
+  84% {
+    opacity: 0;
+  }
+  84.5%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes dot-pulse {
+  0%,
+  34%,
+  39.5%,
+  74%,
+  84.5%,
+  100% {
+    background: #ff4444;
+    box-shadow: 0 0 6px #ff4444;
+  }
+  35%,
+  37%,
+  75.3%,
+  83% {
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+@keyframes scan {
+  0% {
+    top: -2px;
+  }
+  100% {
+    top: 100vh;
+  }
 }
