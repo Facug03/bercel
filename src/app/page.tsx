@@ -1,4 +1,6 @@
-import { Button, Card, Chip } from "@heroui/react";
+import { Card, Chip } from "@heroui/react";
+import Link from "next/link";
+import { SessionMenu } from "@/components/session-menu";
 
 export default function Home() {
   return (
@@ -22,13 +24,7 @@ export default function Home() {
             Confiado por 0,3 developers
           </Chip>
 
-          <Button
-            className="rounded-full border border-white/15 bg-white/5 text-xs font-medium text-white/80"
-            size="sm"
-            variant="outline"
-          >
-            Docu medio oficial
-          </Button>
+          <SessionMenu />
         </header>
 
         <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center text-center">
@@ -87,24 +83,12 @@ export default function Home() {
             </p>
 
             <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-              <Button
-                className="rounded-xl border border-white/15 bg-white px-5 py-2.5 text-sm font-semibold text-black"
-                variant="primary"
-              >
-                Deploy
-              </Button>
-              <Button
-                className="rounded-xl border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-medium text-white"
-                variant="outline"
-              >
-                Deploy-ish
-              </Button>
-              <Button
-                className="rounded-xl border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-medium text-white/85"
-                variant="outline"
+              <Link
+                className="rounded-xl border border-white/15 bg-white px-5 py-2.5 text-sm font-semibold text-black transition hover:opacity-90"
+                href="/auth"
               >
                 Ship maybe
-              </Button>
+              </Link>
             </div>
           </div>
         </section>
