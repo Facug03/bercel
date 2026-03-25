@@ -425,6 +425,84 @@ export async function deleteProject(
   ]);
 }
 
+export type ExploreSort = "recent" | "oldest" | "popular";
+
+export type PublicProjectResult = {
+  id: number;
+  slug: string;
+  title: string;
+  username: string;
+  views: number;
+  updatedAt: string;
+};
+
+export async function searchPublicProjects({
+  query = "",
+  sort = "recent",
+  limit = 24,
+  offset = 0,
+}: {
+  query?: string;
+  sort?: ExploreSort;
+  limit?: number;
+  offset?: number;
+}): Promise<{ projects: PublicProjectResult[]; total: number }> {
+  const orderBy =
+    sort === "popular"
+      ? "p.views DESC, p.updated_at DESC"
+      : sort === "oldest"
+        ? "p.updated_at ASC"
+        : "p.updated_at DESC";
+
+  const search = query.trim();
+  const params: unknown[] = [limit, offset];
+  let whereExtra = "";
+  if (search) {
+    params.push(`%${search}%`);
+    whereExtra = `AND (p.title ILIKE $${params.length} OR up.username ILIKE $${params.length})`;
+  }
+
+  const [rows, countRow] = await Promise.all([
+    db.query<{
+      id: number;
+      slug: string;
+      title: string;
+      username: string;
+      views: number;
+      updated_at: Date;
+    }>(
+      `SELECT p.id, p.slug, p.title, up.username, p.views, p.updated_at
+       FROM public.project p
+       INNER JOIN public.user_profile up ON up.user_id = p.user_id
+       WHERE p.is_published = TRUE
+       ${whereExtra}
+       ORDER BY ${orderBy}
+       LIMIT $1 OFFSET $2`,
+      params,
+    ),
+    db.query<{ count: string }>(
+      `SELECT COUNT(*) AS count
+       FROM public.project p
+       INNER JOIN public.user_profile up ON up.user_id = p.user_id
+       WHERE p.is_published = TRUE
+       ${whereExtra}`,
+      search ? [params[2]] : [],
+    ),
+  ]);
+
+  return {
+    projects: rows.rows.map((r) => ({
+      id: r.id,
+      slug: r.slug,
+      title: r.title,
+      username: r.username,
+      views: r.views,
+      updatedAt: r.updated_at.toISOString(),
+    })),
+    total: parseInt(countRow.rows[0]?.count ?? "0", 10),
+  };
+}
+
 export const getPublishedProjectByPath = cache(
   async (username: string, slug: string) => {
     const result = await db.query<{
