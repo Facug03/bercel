@@ -157,14 +157,24 @@ export function ProjectEditorForm({
               name="project-slug"
               value={slug}
               variant="secondary"
-              onChange={(v) => setSlug(v.toLowerCase())}
+              onChange={(v) =>
+                setSlug(
+                  v
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .toLowerCase()
+                    .replace(/[^a-z0-9-]+/g, "-")
+                    .replace(/-{2,}/g, "-"),
+                )
+              }
             >
-              <Label className="sr-only">Slug del proyecto</Label>
+              <Label className="text-xs text-white/50">Slug</Label>
               <Input
                 autoComplete="off"
                 className="text-xs"
                 placeholder="slug"
                 spellCheck={false}
+                onBlur={() => setSlug((s) => s.replace(/^-+|-+$/g, ""))}
               />
             </TextField>
           )}
@@ -176,7 +186,7 @@ export function ProjectEditorForm({
             variant="secondary"
             onChange={setTitle}
           >
-            <Label className="sr-only">Título del proyecto</Label>
+            <Label className="text-xs text-white/50">Título</Label>
             <Input
               autoComplete="off"
               className="text-xs"
