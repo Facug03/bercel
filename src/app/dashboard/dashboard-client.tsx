@@ -61,16 +61,12 @@ export function DashboardClient({
         <Card.Header className="flex items-center justify-between p-0 pb-3">
           <h2 className="text-lg font-semibold">Proyectos ({total})</h2>
           <Link
+            className="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90"
             href={
               initialUsername ? "/dashboard/projects/new" : "/dashboard/profile"
             }
           >
-            <Button
-              className="rounded-xl bg-white font-semibold text-black"
-              variant="primary"
-            >
-              Nuevo proyecto
-            </Button>
+            Nuevo proyecto
           </Link>
         </Card.Header>
         <Card.Content className="space-y-2 p-0">
