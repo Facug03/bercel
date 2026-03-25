@@ -1,7 +1,7 @@
 "use client";
 
-import { Button, Card } from "@heroui/react";
 import Editor from "@monaco-editor/react";
+import { ExternalLink, Maximize2, Minimize2, Save } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
@@ -47,12 +47,10 @@ export function ProjectEditorForm({
   const [isPublished, setIsPublished] = useState(initialIsPublished);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [isEditorFullscreen, setIsEditorFullscreen] = useState(false);
 
   const currentPath = useMemo(() => {
-    if (!username || !slug) {
-      return null;
-    }
-
+    if (!username || !slug) return null;
     return `/${username}/${slug}`;
   }, [username, slug]);
 
@@ -63,12 +61,7 @@ export function ProjectEditorForm({
     const response = await fetch("/api/projects", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        slug,
-        title,
-        htmlContent,
-        isPublished,
-      }),
+      body: JSON.stringify({ slug, title, htmlContent, isPublished }),
     });
 
     const data = (await response.json()) as {
@@ -82,12 +75,7 @@ export function ProjectEditorForm({
       return;
     }
 
-    setMessage(
-      mode === "create"
-        ? "Proyecto creado correctamente."
-        : "Proyecto actualizado correctamente.",
-    );
-
+    setMessage(mode === "create" ? "Proyecto creado." : "Guardado.");
     setIsSaving(false);
 
     if (mode === "create" && data.project?.slug) {
@@ -96,123 +84,134 @@ export function ProjectEditorForm({
   }
 
   return (
-    <section className="grid gap-6 lg:grid-cols-12">
-      <Card
-        className="border border-white/10 bg-[#111]/90 p-5 lg:col-span-8"
-        variant="default"
-      >
-        <Card.Header className="flex items-center justify-between p-0 pb-4">
-          <div>
-            <h2 className="text-lg font-semibold">
-              {mode === "create" ? "Crear proyecto" : "Editar proyecto"}
-            </h2>
-            <p className="text-sm text-white/60">
-              Publicá en la ruta /[username]/[project].
-            </p>
-          </div>
-          <label className="inline-flex items-center gap-2 text-sm text-white/70">
+    <div className="flex h-full flex-col">
+      {/* Toolbar */}
+      <div className="flex shrink-0 items-center gap-2 border-b border-white/10 bg-[#0d0d0d] px-4 py-2">
+        <Link
+          className="shrink-0 text-xs text-white/35 transition hover:text-white/65"
+          href="/dashboard"
+        >
+          Dashboard
+        </Link>
+        <span className="text-white/20">/</span>
+        <span className="shrink-0 text-xs text-white/40">
+          {mode === "create" ? "Nuevo proyecto" : slug}
+        </span>
+
+        <div className="flex flex-1 items-center justify-center gap-2">
+          {mode === "create" && (
             <input
-              checked={isPublished}
-              onChange={(event) => setIsPublished(event.target.checked)}
-              type="checkbox"
+              className="w-32 rounded border border-white/10 bg-white/5 px-2 py-1 text-xs text-white outline-none transition placeholder:text-white/30 focus:border-white/25"
+              onChange={(e) => setSlug(e.target.value.toLowerCase())}
+              placeholder="slug"
+              value={slug}
             />
-            Publicado
-          </label>
-        </Card.Header>
+          )}
+          <input
+            className="w-48 rounded border border-white/10 bg-white/5 px-2 py-1 text-xs text-white outline-none transition placeholder:text-white/30 focus:border-white/25"
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Título"
+            value={title}
+          />
+        </div>
 
-        <Card.Content className="space-y-4 p-0">
-          <div className="grid gap-3 md:grid-cols-2">
-            <label className="block space-y-1">
-              <span className="text-sm text-white/70">Slug del proyecto</span>
-              <input
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none transition focus:border-white/30 disabled:cursor-not-allowed disabled:opacity-60"
-                disabled={mode === "edit"}
-                onChange={(event) => setSlug(event.target.value.toLowerCase())}
-                placeholder="mi-proyecto"
-                value={slug}
-              />
-            </label>
+        <label className="flex shrink-0 cursor-pointer items-center gap-1.5 text-xs text-white/45 transition hover:text-white/65 select-none">
+          <input
+            checked={isPublished}
+            className="accent-white"
+            onChange={(e) => setIsPublished(e.target.checked)}
+            type="checkbox"
+          />
+          Publicado
+        </label>
 
-            <label className="block space-y-1">
-              <span className="text-sm text-white/70">Título</span>
-              <input
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none transition focus:border-white/30"
-                onChange={(event) => setTitle(event.target.value)}
-                placeholder="Landing de prueba"
-                value={title}
-              />
-            </label>
+        {currentPath ? (
+          <Link
+            className="shrink-0 rounded p-1.5 text-white/35 transition hover:bg-white/8 hover:text-white/65"
+            href={currentPath}
+            target="_blank"
+            title={`Abrir ${currentPath}`}
+          >
+            <ExternalLink aria-hidden size={14} />
+          </Link>
+        ) : null}
+
+        <button
+          className="flex shrink-0 items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-black transition hover:bg-white/90 disabled:opacity-60"
+          disabled={isSaving}
+          type="button"
+          onClick={handleSaveProject}
+        >
+          <Save aria-hidden size={12} />
+          {isSaving ? "Guardando..." : mode === "create" ? "Crear" : "Guardar"}
+        </button>
+
+        {message ? (
+          <span className="shrink-0 text-xs text-white/45">{message}</span>
+        ) : null}
+      </div>
+
+      {/* Split panel */}
+      <div className="flex min-h-0 flex-1">
+        {/* Editor panel — same DOM node, only classes change to avoid remounting Monaco */}
+        <div
+          className={
+            isEditorFullscreen
+              ? "fixed inset-0 z-50 flex flex-col bg-[#1e1e1e]"
+              : "flex min-h-0 w-1/2 flex-col border-r border-white/10"
+          }
+        >
+          <div className="flex h-9 shrink-0 items-center justify-between border-b border-white/10 bg-[#111] px-3">
+            <span className="font-mono text-xs text-white/35">index.html</span>
+            <button
+              className="rounded p-1 text-white/35 transition hover:bg-white/8 hover:text-white/65"
+              title={
+                isEditorFullscreen
+                  ? "Salir de pantalla completa"
+                  : "Pantalla completa"
+              }
+              type="button"
+              onClick={() => setIsEditorFullscreen((v) => !v)}
+            >
+              {isEditorFullscreen ? (
+                <Minimize2 aria-hidden size={14} />
+              ) : (
+                <Maximize2 aria-hidden size={14} />
+              )}
+            </button>
           </div>
-
-          <div className="overflow-hidden rounded-xl border border-white/10">
+          <div className="min-h-0 flex-1">
             <Editor
               defaultLanguage="html"
-              height="420px"
-              onChange={(value) => setHtmlContent(value ?? "")}
+              height="100%"
               options={{
                 minimap: { enabled: false },
-                fontSize: 14,
+                fontSize: 13,
                 wordWrap: "on",
                 smoothScrolling: true,
                 scrollBeyondLastLine: false,
+                padding: { top: 12, bottom: 12 },
               }}
               theme="vs-dark"
               value={htmlContent}
+              onChange={(value) => setHtmlContent(value ?? "")}
             />
           </div>
+        </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <Button
-              className="rounded-xl bg-white font-semibold text-black"
-              isDisabled={isSaving}
-              onPress={handleSaveProject}
-              variant="primary"
-            >
-              {isSaving
-                ? "Guardando..."
-                : mode === "create"
-                  ? "Crear"
-                  : "Guardar cambios"}
-            </Button>
-
-            {currentPath ? (
-              <Link
-                className="rounded-xl border border-white/20 px-4 py-2 text-sm text-white/85 transition hover:bg-white/10"
-                href={currentPath}
-                target="_blank"
-              >
-                Abrir {currentPath}
-              </Link>
-            ) : null}
-
-            <Link
-              className="text-sm text-white/70 underline underline-offset-4"
-              href="/dashboard"
-            >
-              Volver al dashboard
-            </Link>
+        {/* Preview panel */}
+        <div className="flex min-h-0 w-1/2 flex-col">
+          <div className="flex h-9 shrink-0 items-center border-b border-white/10 bg-[#111] px-3">
+            <span className="text-xs text-white/35">Preview</span>
           </div>
-
-          {message ? <p className="text-sm text-white/70">{message}</p> : null}
-        </Card.Content>
-      </Card>
-
-      <Card
-        className="border border-white/10 bg-[#111]/90 p-5 lg:col-span-4"
-        variant="default"
-      >
-        <Card.Header className="p-0 pb-3">
-          <h3 className="text-lg font-semibold">Preview</h3>
-        </Card.Header>
-        <Card.Content className="p-0">
           <iframe
-            className="h-105 w-full rounded-xl border border-white/10 bg-white"
+            className="min-h-0 flex-1 bg-white"
             sandbox="allow-scripts"
             srcDoc={htmlContent}
-            title="Preview HTML"
+            title="Preview"
           />
-        </Card.Content>
-      </Card>
-    </section>
+        </div>
+      </div>
+    </div>
   );
 }

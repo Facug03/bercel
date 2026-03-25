@@ -220,6 +220,7 @@ export async function getPublishedProjectByPath(
   slug: string,
 ) {
   const result = await db.query<{
+    user_id: string;
     username: string;
     slug: string;
     title: string;
@@ -227,7 +228,7 @@ export async function getPublishedProjectByPath(
     updated_at: Date;
   }>(
     `
-      SELECT up.username, p.slug, p.title, p.html_content, p.updated_at
+      SELECT up.user_id, up.username, p.slug, p.title, p.html_content, p.updated_at
       FROM public.user_profile up
       INNER JOIN public.project p ON p.user_id = up.user_id
       WHERE LOWER(up.username) = LOWER($1)

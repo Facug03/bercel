@@ -13,5 +13,10 @@ export default async function DashboardProfilePage() {
 
   const profile = await getUserProfile(session.user.id);
 
-  return <ProfileClient initialUsername={profile?.username ?? ""} />;
+  return (
+    <ProfileClient
+      initialUsername={profile?.username ?? ""}
+      userEmail={session.user.email}
+    />
+  );
 }

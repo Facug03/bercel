@@ -1,44 +1,79 @@
+import type { Metadata } from "next";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { auth } from "@/lib/auth";
 import { getPublishedProjectByPath } from "@/lib/projects";
+
+function extractHtmlTitle(html: string): string | null {
+  const match = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  return match ? match[1].trim() : null;
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/[username]/[project]">): Promise<Metadata> {
+  const { username, project } = await params;
+  const projectData = await getPublishedProjectByPath(username, project);
+  if (!projectData) return {};
+
+  const htmlTitle = projectData.html_content
+    ? extractHtmlTitle(projectData.html_content)
+    : null;
+  const title = htmlTitle ?? projectData.title;
+
+  return {
+    title,
+    description: `${username}/${project} · bercel`,
+  };
+}
 
 export default async function PublicProjectPage({
   params,
 }: PageProps<"/[username]/[project]">) {
   const { username, project } = await params;
 
-  const projectData = await getPublishedProjectByPath(username, project);
+  const [projectData, session] = await Promise.all([
+    getPublishedProjectByPath(username, project),
+    auth.api.getSession({ headers: await headers() }),
+  ]);
 
   if (!projectData) {
     notFound();
   }
 
-  return (
-    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-4 px-6 py-6 text-white">
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="font-mono text-sm text-white/60">
-            /{projectData.username}/{projectData.slug}
-          </p>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {projectData.title}
-          </h1>
-        </div>
+  const isOwner = session?.user?.id === projectData.user_id;
 
-        <Link
-          className="text-sm text-white/70 underline underline-offset-4"
-          href="/dashboard"
-        >
-          Ir al dashboard
-        </Link>
-      </header>
-
+  if (!isOwner) {
+    return (
       <iframe
-        className="h-[calc(100vh-140px)] w-full rounded-xl border border-white/10 bg-white"
+        className="fixed inset-0 h-full w-full border-none"
         sandbox="allow-scripts"
         srcDoc={projectData.html_content ?? ""}
         title={projectData.title}
       />
-    </main>
+    );
+  }
+
+  return (
+    <>
+      <div className="fixed inset-x-0 top-0 z-50 flex h-10 items-center justify-between border-b border-white/10 bg-black/80 px-4 backdrop-blur-sm">
+        <p className="font-mono text-xs text-white/50">
+          /{projectData.username}/{projectData.slug}
+        </p>
+        <Link
+          className="rounded-lg border border-white/15 px-3 py-1 text-xs text-white/70 transition hover:bg-white/10 hover:text-white"
+          href={`/dashboard/projects/${projectData.slug}`}
+        >
+          Editar
+        </Link>
+      </div>
+      <iframe
+        className="fixed inset-0 top-10 h-[calc(100%-40px)] w-full border-none"
+        sandbox="allow-scripts"
+        srcDoc={projectData.html_content ?? ""}
+        title={projectData.title}
+      />
+    </>
   );
 }

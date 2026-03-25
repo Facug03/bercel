@@ -20,7 +20,6 @@ export default async function DashboardPage() {
     <DashboardClient
       initialProjects={projects}
       initialUsername={profile?.username ?? null}
-      userEmail={session.user.email}
     />
   );
 }
