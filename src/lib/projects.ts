@@ -16,6 +16,10 @@ export type ProjectSummary = {
   updatedAt: string;
 };
 
+export type ProjectDetail = ProjectSummary & {
+  htmlContent: string;
+};
+
 export async function getUserProfile(
   userId: string,
 ): Promise<UserProfile | null> {
@@ -95,6 +99,43 @@ export async function listProjectsByUser(
     isPublished: row.is_published,
     updatedAt: row.updated_at.toISOString(),
   }));
+}
+
+export async function getProjectByUserAndSlug(
+  userId: string,
+  slug: string,
+): Promise<ProjectDetail | null> {
+  const result = await db.query<{
+    id: number;
+    slug: string;
+    title: string;
+    html_content: string | null;
+    is_published: boolean;
+    updated_at: Date;
+  }>(
+    `
+      SELECT id, slug, title, html_content, is_published, updated_at
+      FROM public.project
+      WHERE user_id = $1
+        AND LOWER(slug) = LOWER($2)
+      LIMIT 1
+    `,
+    [userId, slug],
+  );
+
+  const row = result.rows[0];
+  if (!row) {
+    return null;
+  }
+
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    htmlContent: row.html_content ?? "",
+    isPublished: row.is_published,
+    updatedAt: row.updated_at.toISOString(),
+  };
 }
 
 export async function upsertProjectBySlug(input: {
