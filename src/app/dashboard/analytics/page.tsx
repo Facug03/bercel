@@ -1,11 +1,10 @@
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
 import { getAnalyticsForUser } from "@/lib/projects";
+import { getSession } from "@/lib/session";
 import { AnalyticsClient } from "./analytics-client";
 
 export default async function AnalyticsPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await getSession();
 
   if (!session?.user?.id) {
     redirect("/auth");

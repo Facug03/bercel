@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { auth } from "@/lib/auth";
 
 const client = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
@@ -20,6 +21,13 @@ Reglas:
 - El resultado debe verse bien en producción.`;
 
 export async function POST(request: Request) {
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session?.user?.id) {
+    return new Response(JSON.stringify({ error: "No autenticado" }), {
+      status: 401,
+    });
+  }
+
   const { prompt } = (await request.json()) as { prompt?: string };
 
   if (!prompt?.trim()) {

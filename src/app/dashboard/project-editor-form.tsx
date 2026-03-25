@@ -9,7 +9,9 @@ import {
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { saveProjectAction } from "./actions";
 
 type ProjectEditorFormProps = {
   mode: "create" | "edit";
@@ -47,6 +49,7 @@ export function ProjectEditorForm({
   initialHtmlContent,
   initialIsPublished,
 }: ProjectEditorFormProps) {
+  const router = useRouter();
   const [slug, setSlug] = useState(initialSlug);
   const [title, setTitle] = useState(initialTitle);
   const [htmlContent, setHtmlContent] = useState(initialHtmlContent);
@@ -109,19 +112,15 @@ export function ProjectEditorForm({
     setMessage(null);
     setIsSaving(true);
 
-    const response = await fetch("/api/projects", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug, title, htmlContent, isPublished }),
+    const result = await saveProjectAction({
+      slug,
+      title,
+      htmlContent,
+      isPublished,
     });
 
-    const data = (await response.json()) as {
-      error?: string;
-      project?: { slug: string };
-    };
-
-    if (!response.ok) {
-      setMessage(data.error ?? "No se pudo guardar el proyecto.");
+    if ("error" in result) {
+      setMessage(result.error);
       setIsSaving(false);
       return;
     }
@@ -129,8 +128,8 @@ export function ProjectEditorForm({
     setMessage(mode === "create" ? "Proyecto creado." : "Guardado.");
     setIsSaving(false);
 
-    if (mode === "create" && data.project?.slug) {
-      window.location.href = `/dashboard/projects/${data.project.slug}`;
+    if (mode === "create" && result.project?.slug) {
+      router.push(`/dashboard/projects/${result.project.slug}`);
     }
   }
 

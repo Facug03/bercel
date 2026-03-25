@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { auth } from "@/lib/auth";
 import {
   getPublishedProjectByPath,
   incrementProjectViews,
 } from "@/lib/projects";
+import { getSession } from "@/lib/session";
 
 function extractHtmlTitle(html: string): string | null {
   const match = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
@@ -38,7 +37,7 @@ export default async function PublicProjectPage({
 
   const [projectData, session] = await Promise.all([
     getPublishedProjectByPath(username, project),
-    auth.api.getSession({ headers: await headers() }),
+    getSession(),
   ]);
 
   if (!projectData) {

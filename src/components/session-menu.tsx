@@ -2,6 +2,7 @@
 
 import { Avatar } from "@heroui/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { signOut, useSession } from "@/lib/auth-client";
 
@@ -14,6 +15,7 @@ export function SessionMenu({
   className,
   showDashboardLink = true,
 }: SessionMenuProps) {
+  const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const { data: session, isPending } = useSession();
   const fallbackInitial = (session?.user?.email?.[0] ?? "U").toUpperCase();
@@ -25,7 +27,8 @@ export function SessionMenu({
     setIsSigningOut(false);
 
     if (!error) {
-      window.location.href = "/";
+      router.push("/");
+      router.refresh();
     }
   }
 

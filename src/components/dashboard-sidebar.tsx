@@ -2,7 +2,7 @@
 
 import { BarChart2, LayoutGrid, UserRound } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { signOut } from "@/lib/auth-client";
 
@@ -16,13 +16,15 @@ export function DashboardSidebar({
   username,
 }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const initial = (userEmail[0] ?? "U").toUpperCase();
 
   async function handleSignOut() {
     setIsSigningOut(true);
     await signOut();
-    window.location.href = "/";
+    router.push("/");
+    router.refresh();
   }
 
   const navItems = [

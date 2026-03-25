@@ -1,11 +1,10 @@
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
 import { getUserProfile } from "@/lib/projects";
+import { getSession } from "@/lib/session";
 import { ProfileClient } from "./profile-client";
 
 export default async function DashboardProfilePage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await getSession();
 
   if (!session?.user?.id) {
     redirect("/auth");

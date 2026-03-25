@@ -1,11 +1,10 @@
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
 import { getUserProfile } from "@/lib/projects";
+import { getSession } from "@/lib/session";
 import { ProjectEditorForm, starterHtml } from "../../project-editor-form";
 
 export default async function NewProjectPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await getSession();
 
   if (!session?.user?.id) {
     redirect("/auth");

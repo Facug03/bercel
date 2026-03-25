@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { db } from "@/lib/db";
 
 export const USERNAME_REGEX = /^[a-zA-Z0-9_-]{3,32}$/;
@@ -334,9 +335,7 @@ export async function getAnalyticsForUser(
   });
 }
 
-export async function listRecentPublicProjects(
-  limit = 12,
-): Promise<
+export async function listRecentPublicProjects(limit = 12): Promise<
   {
     id: number;
     slug: string;
@@ -426,20 +425,18 @@ export async function deleteProject(
   ]);
 }
 
-export async function getPublishedProjectByPath(
-  username: string,
-  slug: string,
-) {
-  const result = await db.query<{
-    id: number;
-    user_id: string;
-    username: string;
-    slug: string;
-    title: string;
-    html_content: string | null;
-    updated_at: Date;
-  }>(
-    `
+export const getPublishedProjectByPath = cache(
+  async (username: string, slug: string) => {
+    const result = await db.query<{
+      id: number;
+      user_id: string;
+      username: string;
+      slug: string;
+      title: string;
+      html_content: string | null;
+      updated_at: Date;
+    }>(
+      `
       SELECT p.id, up.user_id, up.username, p.slug, p.title, p.html_content, p.updated_at
       FROM public.user_profile up
       INNER JOIN public.project p ON p.user_id = up.user_id
@@ -448,8 +445,9 @@ export async function getPublishedProjectByPath(
         AND p.is_published = TRUE
       LIMIT 1
     `,
-    [username, slug],
-  );
+      [username, slug],
+    );
 
-  return result.rows[0] ?? null;
-}
+    return result.rows[0] ?? null;
+  },
+);

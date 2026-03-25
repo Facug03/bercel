@@ -1,15 +1,14 @@
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
-import { auth } from "@/lib/auth";
 import { getUserProfile } from "@/lib/projects";
+import { getSession } from "@/lib/session";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await getSession();
 
   if (!session?.user) {
     redirect("/auth");

@@ -1,7 +1,6 @@
-import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
 import { getProjectByUserAndSlug, getUserProfile } from "@/lib/projects";
+import { getSession } from "@/lib/session";
 import { ProjectEditorForm } from "../../project-editor-form";
 
 type ProjectPageProps = {
@@ -11,7 +10,7 @@ type ProjectPageProps = {
 };
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const session = await getSession();
 
   if (!session?.user?.id) {
     redirect("/auth");
