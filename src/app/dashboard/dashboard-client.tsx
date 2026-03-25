@@ -126,6 +126,7 @@ export function DashboardClient({
                       ) : null}
                     </div>
                     <button
+                      aria-label={`Eliminar "${project.title}"`}
                       className="flex items-center gap-1 text-xs text-red-400/50 transition hover:text-red-400 disabled:opacity-30"
                       disabled={deletingId === project.id}
                       type="button"

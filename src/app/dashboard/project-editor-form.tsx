@@ -150,19 +150,27 @@ export function ProjectEditorForm({
 
         <div className="flex flex-1 items-center justify-center gap-2">
           {mode === "create" && (
-            <input
-              className="w-32 rounded border border-white/10 bg-white/5 px-2 py-1 text-xs text-white outline-none transition placeholder:text-white/30 focus:border-white/25"
-              onChange={(e) => setSlug(e.target.value.toLowerCase())}
-              placeholder="slug"
-              value={slug}
-            />
+            <label className="sr-only" htmlFor="project-slug">
+              Slug del proyecto
+              <input
+                className="w-32 rounded border border-white/10 bg-white/5 px-2 py-1 text-xs text-white outline-none transition placeholder:text-white/30 focus:border-white/25"
+                id="project-slug"
+                onChange={(e) => setSlug(e.target.value.toLowerCase())}
+                placeholder="slug"
+                value={slug}
+              />
+            </label>
           )}
-          <input
-            className="w-48 rounded border border-white/10 bg-white/5 px-2 py-1 text-xs text-white outline-none transition placeholder:text-white/30 focus:border-white/25"
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Título"
-            value={title}
-          />
+          <label className="sr-only" htmlFor="project-title">
+            Título del proyecto
+            <input
+              className="w-48 rounded border border-white/10 bg-white/5 px-2 py-1 text-xs text-white outline-none transition placeholder:text-white/30 focus:border-white/25"
+              id="project-title"
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Título"
+              value={title}
+            />
+          </label>
         </div>
 
         <label className="flex shrink-0 cursor-pointer items-center gap-1.5 text-xs text-white/45 transition hover:text-white/65 select-none">
@@ -200,9 +208,7 @@ export function ProjectEditorForm({
               : "Guardar"}
         </button>
 
-        {message ? (
-          <span className="shrink-0 text-xs text-white/45">{message}</span>
-        ) : null}
+        <output className="shrink-0 text-xs text-white/45">{message}</output>
       </div>
 
       {/* Split panel */}
@@ -219,25 +225,28 @@ export function ProjectEditorForm({
             <span className="font-mono text-xs text-white/35">index.html</span>
             <div className="flex items-center gap-1">
               <button
+                aria-label={
+                  showGenerateBar ? "Cerrar generador IA" : "Generar con IA"
+                }
+                aria-pressed={showGenerateBar}
                 className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] transition ${
                   showGenerateBar
                     ? "bg-white/10 text-white/70"
                     : "text-white/35 hover:bg-white/8 hover:text-white/65"
                 }`}
-                title="Generar con IA"
                 type="button"
                 onClick={() => setShowGenerateBar((v) => !v)}
               >
                 <Sparkles aria-hidden size={13} />
-                <span>IA</span>
+                <span aria-hidden>IA</span>
               </button>
               <button
-                className="rounded p-1 text-white/35 transition hover:bg-white/8 hover:text-white/65"
-                title={
+                aria-label={
                   isEditorFullscreen
                     ? "Salir de pantalla completa"
                     : "Pantalla completa"
                 }
+                className="rounded p-1 text-white/35 transition hover:bg-white/8 hover:text-white/65"
                 type="button"
                 onClick={() => setIsEditorFullscreen((v) => !v)}
               >
