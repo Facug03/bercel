@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Group, Panel, Separator } from "react-resizable-panels";
 import { saveProjectAction } from "./actions";
 
 type ProjectEditorFormProps = {
@@ -237,124 +238,328 @@ export function ProjectEditorForm({
       </div>
 
       {/* Split panel */}
-      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-        {/* Editor panel — same DOM node, only classes change to avoid remounting Monaco */}
-        <div
-          className={
-            isEditorFullscreen
-              ? "fixed inset-0 z-50 flex flex-col bg-[#1e1e1e]"
-              : "flex h-96 w-full flex-col border-b border-white/10 lg:h-auto lg:min-h-0 lg:w-1/2 lg:flex-1 lg:border-r lg:border-b-0"
-          }
-        >
-          <div className="flex h-9 shrink-0 items-center justify-between border-b border-white/10 bg-[#111] px-3">
-            <span className="font-mono text-xs text-white/35">index.html</span>
-            <div className="flex items-center gap-1">
-              <button
-                aria-label={
-                  showGenerateBar ? "Cerrar generador IA" : "Generar con IA"
-                }
-                aria-pressed={showGenerateBar}
-                className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] transition ${
-                  showGenerateBar
-                    ? "bg-white/10 text-white/70"
-                    : "text-white/35 hover:bg-white/8 hover:text-white/65"
-                }`}
-                type="button"
-                onClick={() => setShowGenerateBar((v) => !v)}
-              >
-                <Sparkles aria-hidden size={13} />
-                <span aria-hidden>IA</span>
-              </button>
-              <button
-                aria-label={
-                  isEditorFullscreen
-                    ? "Salir de pantalla completa"
-                    : "Pantalla completa"
-                }
-                className="rounded p-1 text-white/35 transition hover:bg-white/8 hover:text-white/65"
-                type="button"
-                onClick={() => setIsEditorFullscreen((v) => !v)}
-              >
-                {isEditorFullscreen ? (
+      <div className="flex min-h-0 flex-1 flex-col">
+        {isEditorFullscreen ? (
+          <div className="fixed inset-0 z-50 flex flex-col bg-[#1e1e1e]">
+            <div className="flex h-9 shrink-0 items-center justify-between border-b border-white/10 bg-[#111] px-3">
+              <span className="font-mono text-xs text-white/35">
+                index.html
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  aria-label={
+                    showGenerateBar ? "Cerrar generador IA" : "Generar con IA"
+                  }
+                  aria-pressed={showGenerateBar}
+                  className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] transition ${
+                    showGenerateBar
+                      ? "bg-white/10 text-white/70"
+                      : "text-white/35 hover:bg-white/8 hover:text-white/65"
+                  }`}
+                  type="button"
+                  onClick={() => setShowGenerateBar((v) => !v)}
+                >
+                  <Sparkles aria-hidden size={13} />
+                  <span aria-hidden>IA</span>
+                </button>
+                <button
+                  aria-label="Salir de pantalla completa"
+                  className="rounded p-1 text-white/35 transition hover:bg-white/8 hover:text-white/65"
+                  type="button"
+                  onClick={() => setIsEditorFullscreen(false)}
+                >
                   <Minimize2 aria-hidden size={14} />
-                ) : (
+                </button>
+              </div>
+            </div>
+
+            {showGenerateBar && (
+              <div className="flex shrink-0 items-center gap-2 border-b border-white/10 bg-[#111]/80 px-3 py-2">
+                <Sparkles
+                  aria-hidden
+                  className="shrink-0 text-white/30"
+                  size={13}
+                />
+                <Input
+                  aria-label="Prompt de generación IA"
+                  autoComplete="off"
+                  className="min-w-0 flex-1 bg-transparent text-xs"
+                  disabled={isGenerating}
+                  placeholder="Describí tu página… (ej: landing para una pizzería)"
+                  spellCheck={false}
+                  value={generatePrompt}
+                  onChange={(e) => setGeneratePrompt(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") void handleGenerate();
+                  }}
+                />
+                <Button
+                  isDisabled={isGenerating || !generatePrompt.trim()}
+                  size="sm"
+                  variant="primary"
+                  onPress={() => void handleGenerate()}
+                >
+                  {isGenerating ? "Generando…" : "Generar"}
+                </Button>
+              </div>
+            )}
+
+            <div className="min-h-0 flex-1">
+              <Editor
+                defaultLanguage="html"
+                height="100%"
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 13,
+                  wordWrap: "on",
+                  smoothScrolling: true,
+                  scrollBeyondLastLine: false,
+                  automaticLayout: true,
+                  padding: { top: 12, bottom: 12 },
+                }}
+                theme="vs-dark"
+                value={htmlContent}
+                onChange={(value) => setHtmlContent(value ?? "")}
+              />
+              <div className="flex h-7 items-center gap-4 border-t border-white/5 bg-[#1e1e1e] px-3">
+                <span className="text-[11px] text-white/25">
+                  Syntax: HTML{" "}
+                  <span className="text-white/15">(probablemente)</span>
+                </span>
+                <span className="text-[11px] text-white/15">
+                  Auto-save: nunca
+                </span>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        <div className="flex min-h-0 flex-1 flex-col lg:hidden">
+          <div className="flex h-96 w-full flex-col border-b border-white/10">
+            <div className="flex h-9 shrink-0 items-center justify-between border-b border-white/10 bg-[#111] px-3">
+              <span className="font-mono text-xs text-white/35">
+                index.html
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  aria-label={
+                    showGenerateBar ? "Cerrar generador IA" : "Generar con IA"
+                  }
+                  aria-pressed={showGenerateBar}
+                  className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] transition ${
+                    showGenerateBar
+                      ? "bg-white/10 text-white/70"
+                      : "text-white/35 hover:bg-white/8 hover:text-white/65"
+                  }`}
+                  type="button"
+                  onClick={() => setShowGenerateBar((v) => !v)}
+                >
+                  <Sparkles aria-hidden size={13} />
+                  <span aria-hidden>IA</span>
+                </button>
+                <button
+                  aria-label="Pantalla completa"
+                  className="rounded p-1 text-white/35 transition hover:bg-white/8 hover:text-white/65"
+                  type="button"
+                  onClick={() => setIsEditorFullscreen(true)}
+                >
                   <Maximize2 aria-hidden size={14} />
-                )}
-              </button>
+                </button>
+              </div>
+            </div>
+
+            {showGenerateBar && (
+              <div className="flex shrink-0 items-center gap-2 border-b border-white/10 bg-[#111]/80 px-3 py-2">
+                <Sparkles
+                  aria-hidden
+                  className="shrink-0 text-white/30"
+                  size={13}
+                />
+                <Input
+                  aria-label="Prompt de generación IA"
+                  autoComplete="off"
+                  className="min-w-0 flex-1 bg-transparent text-xs"
+                  disabled={isGenerating}
+                  placeholder="Describí tu página… (ej: landing para una pizzería)"
+                  spellCheck={false}
+                  value={generatePrompt}
+                  onChange={(e) => setGeneratePrompt(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") void handleGenerate();
+                  }}
+                />
+                <Button
+                  isDisabled={isGenerating || !generatePrompt.trim()}
+                  size="sm"
+                  variant="primary"
+                  onPress={() => void handleGenerate()}
+                >
+                  {isGenerating ? "Generando…" : "Generar"}
+                </Button>
+              </div>
+            )}
+
+            <div className="min-h-0 flex-1">
+              <Editor
+                defaultLanguage="html"
+                height="100%"
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 13,
+                  wordWrap: "on",
+                  smoothScrolling: true,
+                  scrollBeyondLastLine: false,
+                  automaticLayout: true,
+                  padding: { top: 12, bottom: 12 },
+                }}
+                theme="vs-dark"
+                value={htmlContent}
+                onChange={(value) => setHtmlContent(value ?? "")}
+              />
+              <div className="flex h-7 items-center gap-4 border-t border-white/5 bg-[#1e1e1e] px-3">
+                <span className="text-[11px] text-white/25">
+                  Syntax: HTML{" "}
+                  <span className="text-white/15">(probablemente)</span>
+                </span>
+                <span className="text-[11px] text-white/15">
+                  Auto-save: nunca
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* AI generate bar */}
-          {showGenerateBar && (
-            <div className="flex shrink-0 items-center gap-2 border-b border-white/10 bg-[#111]/80 px-3 py-2">
-              <Sparkles
-                aria-hidden
-                className="shrink-0 text-white/30"
-                size={13}
-              />
-              <Input
-                aria-label="Prompt de generación IA"
-                autoComplete="off"
-                className="min-w-0 flex-1 bg-transparent text-xs"
-                disabled={isGenerating}
-                placeholder="Describí tu página… (ej: landing para una pizzería)"
-                spellCheck={false}
-                value={generatePrompt}
-                onChange={(e) => setGeneratePrompt(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") void handleGenerate();
-                }}
-              />
-              <Button
-                isDisabled={isGenerating || !generatePrompt.trim()}
-                size="sm"
-                variant="primary"
-                onPress={() => void handleGenerate()}
-              >
-                {isGenerating ? "Generando…" : "Generar"}
-              </Button>
+          <div className="flex h-88 w-full flex-col">
+            <div className="flex h-9 shrink-0 items-center border-b border-white/10 bg-[#111] px-3">
+              <span className="text-xs text-white/35">Preview</span>
             </div>
-          )}
-          <div className="min-h-0 flex-1">
-            <Editor
-              defaultLanguage="html"
-              height="100%"
-              options={{
-                minimap: { enabled: false },
-                fontSize: 13,
-                wordWrap: "on",
-                smoothScrolling: true,
-                scrollBeyondLastLine: false,
-                automaticLayout: true,
-                padding: { top: 12, bottom: 12 },
-              }}
-              theme="vs-dark"
-              value={htmlContent}
-              onChange={(value) => setHtmlContent(value ?? "")}
+            <iframe
+              className="h-full min-h-0 flex-1 bg-black"
+              sandbox="allow-scripts"
+              srcDoc={previewHtml}
+              title="Preview"
             />
-            <div className="flex h-7 items-center gap-4 border-t border-white/5 bg-[#1e1e1e] px-3">
-              <span className="text-[11px] text-white/25">
-                Syntax: HTML{" "}
-                <span className="text-white/15">(probablemente)</span>
-              </span>
-              <span className="text-[11px] text-white/15">
-                Auto-save: nunca
-              </span>
-            </div>
           </div>
         </div>
 
-        {/* Preview panel */}
-        <div className="flex h-88 w-full flex-col lg:h-auto lg:min-h-0 lg:w-1/2 lg:flex-1">
-          <div className="flex h-9 shrink-0 items-center border-b border-white/10 bg-[#111] px-3">
-            <span className="text-xs text-white/35">Preview</span>
-          </div>
-          <iframe
-            className="h-full min-h-0 flex-1 bg-black"
-            sandbox="allow-scripts"
-            srcDoc={previewHtml}
-            title="Preview"
-          />
+        <div className="hidden min-h-0 flex-1 lg:flex">
+          <Group
+            className="min-h-0 flex-1"
+            id="project-editor-layout"
+            orientation="horizontal"
+          >
+            <Panel defaultSize={50} minSize={25}>
+              <div className="flex h-full min-h-0 flex-col border-r border-white/10">
+                <div className="flex h-9 shrink-0 items-center justify-between border-b border-white/10 bg-[#111] px-3">
+                  <span className="font-mono text-xs text-white/35">
+                    index.html
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      aria-label={
+                        showGenerateBar
+                          ? "Cerrar generador IA"
+                          : "Generar con IA"
+                      }
+                      aria-pressed={showGenerateBar}
+                      className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] transition ${
+                        showGenerateBar
+                          ? "bg-white/10 text-white/70"
+                          : "text-white/35 hover:bg-white/8 hover:text-white/65"
+                      }`}
+                      type="button"
+                      onClick={() => setShowGenerateBar((v) => !v)}
+                    >
+                      <Sparkles aria-hidden size={13} />
+                      <span aria-hidden>IA</span>
+                    </button>
+                    <button
+                      aria-label="Pantalla completa"
+                      className="rounded p-1 text-white/35 transition hover:bg-white/8 hover:text-white/65"
+                      type="button"
+                      onClick={() => setIsEditorFullscreen(true)}
+                    >
+                      <Maximize2 aria-hidden size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                {showGenerateBar && (
+                  <div className="flex shrink-0 items-center gap-2 border-b border-white/10 bg-[#111]/80 px-3 py-2">
+                    <Sparkles
+                      aria-hidden
+                      className="shrink-0 text-white/30"
+                      size={13}
+                    />
+                    <Input
+                      aria-label="Prompt de generación IA"
+                      autoComplete="off"
+                      className="min-w-0 flex-1 bg-transparent text-xs"
+                      disabled={isGenerating}
+                      placeholder="Describí tu página… (ej: landing para una pizzería)"
+                      spellCheck={false}
+                      value={generatePrompt}
+                      onChange={(e) => setGeneratePrompt(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") void handleGenerate();
+                      }}
+                    />
+                    <Button
+                      isDisabled={isGenerating || !generatePrompt.trim()}
+                      size="sm"
+                      variant="primary"
+                      onPress={() => void handleGenerate()}
+                    >
+                      {isGenerating ? "Generando…" : "Generar"}
+                    </Button>
+                  </div>
+                )}
+
+                <div className="min-h-0 flex-1">
+                  <Editor
+                    defaultLanguage="html"
+                    height="100%"
+                    options={{
+                      minimap: { enabled: false },
+                      fontSize: 13,
+                      wordWrap: "on",
+                      smoothScrolling: true,
+                      scrollBeyondLastLine: false,
+                      automaticLayout: true,
+                      padding: { top: 12, bottom: 12 },
+                    }}
+                    theme="vs-dark"
+                    value={htmlContent}
+                    onChange={(value) => setHtmlContent(value ?? "")}
+                  />
+                  <div className="flex h-7 items-center gap-4 border-t border-white/5 bg-[#1e1e1e] px-3">
+                    <span className="text-[11px] text-white/25">
+                      Syntax: HTML{" "}
+                      <span className="text-white/15">(probablemente)</span>
+                    </span>
+                    <span className="text-[11px] text-white/15">
+                      Auto-save: nunca
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Panel>
+
+            <Separator className="w-1 bg-white/10 transition-colors hover:bg-white/20" />
+
+            <Panel defaultSize={50} minSize={25}>
+              <div className="flex h-full min-h-0 flex-col">
+                <div className="flex h-9 shrink-0 items-center border-b border-white/10 bg-[#111] px-3">
+                  <span className="text-xs text-white/35">Preview</span>
+                </div>
+                <iframe
+                  className="h-full min-h-0 flex-1 bg-black"
+                  sandbox="allow-scripts"
+                  srcDoc={previewHtml}
+                  title="Preview"
+                />
+              </div>
+            </Panel>
+          </Group>
         </div>
       </div>
     </div>
