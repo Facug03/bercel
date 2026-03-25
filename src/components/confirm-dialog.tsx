@@ -25,15 +25,16 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  if (!isOpen) return null;
+
   return (
-    <Modal>
-      <Modal.Backdrop
-        isOpen={isOpen}
-        variant="blur"
-        onOpenChange={(open) => {
-          if (!open) onCancel();
-        }}
-      >
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onCancel();
+      }}
+    >
+      <Modal.Backdrop variant="blur">
         <Modal.Container size="sm">
           <Modal.Dialog>
             {({ close }) => (
