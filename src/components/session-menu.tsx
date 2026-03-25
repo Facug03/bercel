@@ -66,7 +66,7 @@ export function SessionMenu({
   if (!session?.user) {
     return (
       <Link
-        className={`rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-medium text-white/80 transition hover:bg-white/10 ${className ?? ""}`}
+        className={`whitespace-nowrap rounded-full border border-white/15 bg-white/5 px-4 py-2 text-[10px] md:text-xs font-medium text-white/80 transition hover:bg-white/10 ${className ?? ""}`}
         href="/auth"
       >
         Entrar / Registrase
