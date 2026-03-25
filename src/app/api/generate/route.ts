@@ -36,6 +36,15 @@ export async function POST(request: Request) {
     });
   }
 
+  if (prompt.length > 2000) {
+    return new Response(
+      JSON.stringify({
+        error: "El prompt no puede superar los 2000 caracteres.",
+      }),
+      { status: 400 },
+    );
+  }
+
   if (!process.env.OPENROUTER_API_KEY) {
     return new Response(
       JSON.stringify({ error: "OPENROUTER_API_KEY no configurada" }),

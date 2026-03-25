@@ -38,4 +38,12 @@ export const auth = betterAuth({
   trustedOrigins: process.env.BETTER_AUTH_URL
     ? [process.env.BETTER_AUTH_URL]
     : undefined,
+  advanced: {
+    useSecureCookies: process.env.NODE_ENV === "production",
+  },
+  rateLimit: {
+    enabled: true,
+    window: 60,
+    max: 10,
+  },
 });
