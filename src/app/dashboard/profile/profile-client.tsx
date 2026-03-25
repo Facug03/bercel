@@ -3,6 +3,7 @@
 import { Button, Card, Input, Label, TextField } from "@heroui/react";
 import Link from "next/link";
 import { useState } from "react";
+import { slugifyInput, trimSlugEdges } from "@/lib/slug";
 
 type ProfileClientProps = {
   initialUsername: string;
@@ -76,20 +77,23 @@ export function ProfileClient({
             name="username"
             value={usernameInput}
             variant="secondary"
-            onChange={setUsernameInput}
+            onChange={(value) => setUsernameInput(slugifyInput(value))}
           >
             <Label>Username</Label>
             <Input
               autoComplete="username"
               placeholder="tu-username"
               spellCheck={false}
+              onBlur={() =>
+                setUsernameInput((current) => trimSlugEdges(current))
+              }
             />
           </TextField>
 
           <p className="text-sm text-white/50">
             Tu base URL será:
             <span className="ml-1 rounded bg-white/10 px-2 py-0.5 font-mono text-white/80">
-              /{username || "tu-username"}
+              /{usernameInput || username || "tu-username"}
             </span>
           </p>
 

@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Group, Panel, Separator } from "react-resizable-panels";
+import { slugifyInput, trimSlugEdges } from "@/lib/slug";
 import { saveProjectAction } from "./actions";
 
 type ProjectEditorFormProps = {
@@ -158,16 +159,7 @@ export function ProjectEditorForm({
               name="project-slug"
               value={slug}
               variant="secondary"
-              onChange={(v) =>
-                setSlug(
-                  v
-                    .normalize("NFD")
-                    .replace(/[\u0300-\u036f]/g, "")
-                    .toLowerCase()
-                    .replace(/[^a-z0-9-]+/g, "-")
-                    .replace(/-{2,}/g, "-"),
-                )
-              }
+              onChange={(value) => setSlug(slugifyInput(value))}
             >
               <Label className="text-xs text-white/50">Slug</Label>
               <Input
@@ -175,7 +167,7 @@ export function ProjectEditorForm({
                 className="text-xs"
                 placeholder="slug"
                 spellCheck={false}
-                onBlur={() => setSlug((s) => s.replace(/^-+|-+$/g, ""))}
+                onBlur={() => setSlug((current) => trimSlugEdges(current))}
               />
             </TextField>
           )}
