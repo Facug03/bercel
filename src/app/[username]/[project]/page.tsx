@@ -3,7 +3,10 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { getPublishedProjectByPath } from "@/lib/projects";
+import {
+  getPublishedProjectByPath,
+  incrementProjectViews,
+} from "@/lib/projects";
 
 function extractHtmlTitle(html: string): string | null {
   const match = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
@@ -42,6 +45,8 @@ export default async function PublicProjectPage({
     notFound();
   }
 
+  void incrementProjectViews(projectData.id);
+
   const isOwner = session?.user?.id === projectData.user_id;
 
   if (!isOwner) {
@@ -59,8 +64,15 @@ export default async function PublicProjectPage({
     <>
       <div className="fixed inset-x-0 top-0 z-50 flex h-10 items-center justify-between border-b border-white/10 bg-black/80 px-4 backdrop-blur-sm">
         <p className="font-mono text-xs text-white/50">
-          /{projectData.username}/{projectData.slug}
+          <Link
+            className="transition hover:text-white/80"
+            href={`/${projectData.username}`}
+          >
+            /{projectData.username}
+          </Link>
+          /{projectData.slug}
         </p>
+        <span className="text-[11px] text-white/20">⚡ 0ms cold start</span>
         <Link
           className="rounded-lg border border-white/15 px-3 py-1 text-xs text-white/70 transition hover:bg-white/10 hover:text-white"
           href={`/dashboard/projects/${projectData.slug}`}

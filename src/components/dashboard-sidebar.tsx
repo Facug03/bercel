@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutGrid, UserRound } from "lucide-react";
+import { BarChart2, LayoutGrid, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -8,9 +8,13 @@ import { signOut } from "@/lib/auth-client";
 
 type DashboardSidebarProps = {
   userEmail: string;
+  username: string | null;
 };
 
-export function DashboardSidebar({ userEmail }: DashboardSidebarProps) {
+export function DashboardSidebar({
+  userEmail,
+  username,
+}: DashboardSidebarProps) {
   const pathname = usePathname();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const initial = (userEmail[0] ?? "U").toUpperCase();
@@ -27,6 +31,12 @@ export function DashboardSidebar({ userEmail }: DashboardSidebarProps) {
       href: "/dashboard",
       icon: <LayoutGrid aria-hidden size={15} />,
       isActive: pathname === "/dashboard",
+    },
+    {
+      label: "Analíticas",
+      href: "/dashboard/analytics",
+      icon: <BarChart2 aria-hidden size={15} />,
+      isActive: pathname === "/dashboard/analytics",
     },
     {
       label: "Perfil",
@@ -66,12 +76,38 @@ export function DashboardSidebar({ userEmail }: DashboardSidebarProps) {
         ))}
       </nav>
 
+      <div className="px-3 pb-2">
+        <div className="flex items-center gap-2 rounded-lg px-2 py-1.5">
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-50" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-400" />
+          </span>
+          <span className="text-[11px] text-white/30">
+            Operacional <span className="text-white/20">(a veces)</span>
+          </span>
+        </div>
+      </div>
+
       <div className="space-y-0.5 border-t border-white/10 p-3">
         <div className="flex items-center gap-2.5 px-2 py-1.5">
           <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/15 text-[11px] font-semibold text-white">
             {initial}
           </div>
-          <span className="truncate text-xs text-white/50">{userEmail}</span>
+          <div className="min-w-0">
+            <span className="block truncate text-xs text-white/50">
+              {userEmail}
+            </span>
+            {username ? (
+              <a
+                className="block truncate font-mono text-[11px] text-white/25 transition hover:text-white/50"
+                href={`/${username}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                /{username} ↗
+              </a>
+            ) : null}
+          </div>
         </div>
         <button
           className="w-full rounded-lg px-3 py-1.5 text-left text-xs text-red-300/60 transition hover:bg-red-400/10 hover:text-red-300 disabled:opacity-50"

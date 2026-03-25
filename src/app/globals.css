@@ -234,14 +234,14 @@ body {
 @keyframes tagline-flicker {
   0%,
   18% {
-    opacity: 0.3;
+    opacity: 0.5;
   }
   18.5% {
     opacity: 0;
   }
   19.5%,
   35% {
-    opacity: 0.3;
+    opacity: 0.5;
   }
   35.5%,
   39% {
@@ -249,7 +249,7 @@ body {
   }
   39.5%,
   100% {
-    opacity: 0.3;
+    opacity: 0.5;
   }
 }
 

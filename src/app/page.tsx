@@ -1,8 +1,10 @@
 import { Card, Chip } from "@heroui/react";
 import Link from "next/link";
 import { SessionMenu } from "@/components/session-menu";
+import { listRecentPublicProjects } from "@/lib/projects";
 
-export default function Home() {
+export default async function Home() {
+  const recentProjects = await listRecentPublicProjects(12);
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#0a0a0a] text-white">
       <div
@@ -27,7 +29,7 @@ export default function Home() {
           <SessionMenu />
         </header>
 
-        <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center text-center">
+        <section className="mx-auto mb-4 flex w-full max-w-4xl flex-1 flex-col items-center justify-center text-center">
           <div className="flex flex-col items-center gap-7">
             <div className="flex items-center gap-4 animate-[flicker-master_4.7s_infinite] sm:gap-5">
               <div className="h-13 w-13 animate-[triangle-glitch_4.7s_infinite] filter-[drop-shadow(0_0_6px_#fff)]">
@@ -60,7 +62,7 @@ export default function Home() {
               </div>
             </div>
 
-            <p className="animate-[tagline-flicker_4.7s_infinite] text-[0.72rem] tracking-[0.28em] text-white/35 uppercase">
+            <p className="animate-[tagline-flicker_4.7s_infinite] text-[0.72rem] tracking-[0.28em] text-white/95 uppercase">
               Ship it. Maybe.
             </p>
 
@@ -87,7 +89,7 @@ export default function Home() {
                 className="rounded-xl border border-white/15 bg-white px-5 py-2.5 text-sm font-semibold text-black transition hover:opacity-90"
                 href="/auth"
               >
-                Ship maybe
+                Desplegar, quizás
               </Link>
             </div>
           </div>
@@ -148,6 +150,57 @@ export default function Home() {
             </Card.Content>
           </Card>
         </section>
+
+        {/* Recent projects feed */}
+        {recentProjects.length > 0 && (
+          <section className="mt-16 border-t border-white/5 pt-12">
+            <div className="mb-6 flex items-center justify-between">
+              <p className="text-xs tracking-[0.18em] text-white/30 uppercase">
+                Últimos proyectos shippeados
+              </p>
+              <span className="text-[11px] text-white/20">
+                en tiempo real (más o menos)
+              </span>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {recentProjects.map((project) => (
+                <div
+                  key={project.id}
+                  className="group flex flex-col justify-between rounded-xl border border-white/8 bg-white/3 p-4 transition hover:border-white/15 hover:bg-white/5"
+                >
+                  <div>
+                    <p className="truncate text-sm font-medium">
+                      {project.title}
+                    </p>
+                    <p className="mt-0.5 font-mono text-xs text-white/30">
+                      <Link
+                        className="text-white/45 transition hover:text-white/80"
+                        href={`/${project.username}`}
+                        target="_blank"
+                        // onClick={(e) => e.stopPropagation()}
+                      >
+                        /{project.username}
+                      </Link>
+                      /{project.slug}
+                    </p>
+                  </div>
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-xs text-white/25">
+                      {project.views.toLocaleString("es-AR")} visitas
+                    </span>
+                    <Link
+                      className="text-xs text-white/30 transition hover:text-white/70"
+                      href={`/${project.username}/${project.slug}`}
+                      target="_blank"
+                    >
+                      abrir ↗
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </main>
   );

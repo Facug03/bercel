@@ -1,9 +1,15 @@
 "use client";
 
 import Editor from "@monaco-editor/react";
-import { ExternalLink, Maximize2, Minimize2, Save } from "lucide-react";
+import {
+  ExternalLink,
+  Maximize2,
+  Minimize2,
+  Save,
+  Sparkles,
+} from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 type ProjectEditorFormProps = {
   mode: "create" | "edit";
@@ -48,11 +54,56 @@ export function ProjectEditorForm({
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [isEditorFullscreen, setIsEditorFullscreen] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatePrompt, setGeneratePrompt] = useState("");
+  const [showGenerateBar, setShowGenerateBar] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState(initialHtmlContent);
 
-  const currentPath = useMemo(() => {
-    if (!username || !slug) return null;
-    return `/${username}/${slug}`;
-  }, [username, slug]);
+  useEffect(() => {
+    const timer = setTimeout(() => setPreviewHtml(htmlContent), 300);
+    return () => clearTimeout(timer);
+  }, [htmlContent]);
+
+  const currentPath = username && slug ? `/${username}/${slug}` : null;
+
+  async function handleGenerate() {
+    if (!generatePrompt.trim() || isGenerating) return;
+    setIsGenerating(true);
+    setHtmlContent("");
+
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: generatePrompt }),
+      });
+
+      if (!res.ok || !res.body) {
+        const err = (await res.json()) as { error?: string };
+        setMessage(err.error ?? "Error al generar.");
+        setIsGenerating(false);
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        accumulated += decoder.decode(value, { stream: true });
+        setHtmlContent(accumulated);
+      }
+
+      setShowGenerateBar(false);
+      setGeneratePrompt("");
+    } catch {
+      setMessage("Error de conexión.");
+    } finally {
+      setIsGenerating(false);
+    }
+  }
 
   async function handleSaveProject() {
     setMessage(null);
@@ -143,7 +194,11 @@ export function ProjectEditorForm({
           onClick={handleSaveProject}
         >
           <Save aria-hidden size={12} />
-          {isSaving ? "Guardando..." : mode === "create" ? "Crear" : "Guardar"}
+          {isSaving
+            ? "Deployando a 0 regiones..."
+            : mode === "create"
+              ? "Crear"
+              : "Guardar"}
         </button>
 
         {message ? (
@@ -163,27 +218,71 @@ export function ProjectEditorForm({
         >
           <div className="flex h-9 shrink-0 items-center justify-between border-b border-white/10 bg-[#111] px-3">
             <span className="font-mono text-xs text-white/35">index.html</span>
-            <button
-              className="rounded p-1 text-white/35 transition hover:bg-white/8 hover:text-white/65"
-              title={
-                isEditorFullscreen
-                  ? "Salir de pantalla completa"
-                  : "Pantalla completa"
-              }
-              type="button"
-              onClick={() => setIsEditorFullscreen((v) => !v)}
-            >
-              {isEditorFullscreen ? (
-                <Minimize2 aria-hidden size={14} />
-              ) : (
-                <Maximize2 aria-hidden size={14} />
-              )}
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] transition ${
+                  showGenerateBar
+                    ? "bg-white/10 text-white/70"
+                    : "text-white/35 hover:bg-white/8 hover:text-white/65"
+                }`}
+                title="Generar con IA"
+                type="button"
+                onClick={() => setShowGenerateBar((v) => !v)}
+              >
+                <Sparkles aria-hidden size={13} />
+                <span>IA</span>
+              </button>
+              <button
+                className="rounded p-1 text-white/35 transition hover:bg-white/8 hover:text-white/65"
+                title={
+                  isEditorFullscreen
+                    ? "Salir de pantalla completa"
+                    : "Pantalla completa"
+                }
+                type="button"
+                onClick={() => setIsEditorFullscreen((v) => !v)}
+              >
+                {isEditorFullscreen ? (
+                  <Minimize2 aria-hidden size={14} />
+                ) : (
+                  <Maximize2 aria-hidden size={14} />
+                )}
+              </button>
+            </div>
           </div>
+
+          {/* AI generate bar */}
+          {showGenerateBar && (
+            <div className="flex shrink-0 items-center gap-2 border-b border-white/10 bg-[#111]/80 px-3 py-2">
+              <Sparkles
+                aria-hidden
+                className="shrink-0 text-white/30"
+                size={13}
+              />
+              <input
+                className="min-w-0 flex-1 bg-transparent text-xs text-white outline-none placeholder:text-white/25"
+                disabled={isGenerating}
+                placeholder="Describí tu página... (ej: landing para una pizzería)"
+                value={generatePrompt}
+                onChange={(e) => setGeneratePrompt(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") void handleGenerate();
+                }}
+              />
+              <button
+                className="shrink-0 rounded bg-white px-2.5 py-1 text-[11px] font-semibold text-black transition hover:bg-white/90 disabled:opacity-50"
+                disabled={isGenerating || !generatePrompt.trim()}
+                type="button"
+                onClick={() => void handleGenerate()}
+              >
+                {isGenerating ? "Generando..." : "Generar"}
+              </button>
+            </div>
+          )}
           <div className="min-h-0 flex-1">
             <Editor
               defaultLanguage="html"
-              height="100%"
+              height="calc(100% - 28px)"
               options={{
                 minimap: { enabled: false },
                 fontSize: 13,
@@ -196,6 +295,15 @@ export function ProjectEditorForm({
               value={htmlContent}
               onChange={(value) => setHtmlContent(value ?? "")}
             />
+            <div className="flex h-7 items-center gap-4 border-t border-white/5 bg-[#1e1e1e] px-3">
+              <span className="text-[11px] text-white/25">
+                Syntax: HTML{" "}
+                <span className="text-white/15">(probablemente)</span>
+              </span>
+              <span className="text-[11px] text-white/15">
+                Auto-save: nunca
+              </span>
+            </div>
           </div>
         </div>
 
@@ -205,9 +313,9 @@ export function ProjectEditorForm({
             <span className="text-xs text-white/35">Preview</span>
           </div>
           <iframe
-            className="min-h-0 flex-1 bg-white"
+            className="min-h-0 flex-1 bg-black"
             sandbox="allow-scripts"
-            srcDoc={htmlContent}
+            srcDoc={previewHtml}
             title="Preview"
           />
         </div>
