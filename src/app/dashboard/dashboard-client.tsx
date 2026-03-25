@@ -72,7 +72,8 @@ export function DashboardClient({
                   </div>
 
                   <p className="mt-2 text-xs text-white/50">
-                    Actualizado: {new Date(project.updatedAt).toLocaleString()}
+                    Actualizado:{" "}
+                    {new Date(project.updatedAt).toLocaleString("es-AR")}
                   </p>
 
                   <div className="mt-3 flex flex-wrap items-center gap-3">
