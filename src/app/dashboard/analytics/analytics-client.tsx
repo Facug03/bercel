@@ -82,7 +82,7 @@ export function AnalyticsClient({ projects }: Props) {
   return (
     <div className="flex flex-col gap-6">
       {/* Overview cards */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Card
           className="border border-white/10 bg-[#111]/90 p-4"
           variant="default"
@@ -188,7 +188,7 @@ export function AnalyticsClient({ projects }: Props) {
             <div className="divide-y divide-white/5">
               {projects.map((p) => (
                 <div
-                  className="flex items-center gap-4 py-3 first:pt-0 last:pb-0"
+                  className="flex flex-col gap-3 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:gap-4"
                   key={p.id}
                 >
                   {/* Info */}
@@ -211,13 +211,13 @@ export function AnalyticsClient({ projects }: Props) {
                   </div>
 
                   {/* Sparkline */}
-                  <div className="shrink-0 text-emerald-400">
+                  <div className="w-full text-emerald-400 sm:w-auto sm:shrink-0">
                     <Sparkline data={p.dailyViews.map((d) => d.views)} />
                   </div>
 
                   {/* Stats */}
-                  <div className="shrink-0 text-right">
-                    <div className="flex items-center justify-end gap-1 text-sm font-semibold">
+                  <div className="text-left sm:shrink-0 sm:text-right">
+                    <div className="flex items-center gap-1 text-sm font-semibold sm:justify-end">
                       <Eye aria-hidden className="text-white/30" size={13} />
                       {p.totalViews.toLocaleString("es-AR")}
                     </div>

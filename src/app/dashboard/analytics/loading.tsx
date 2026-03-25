@@ -2,7 +2,7 @@ import { Skeleton } from "@heroui/react";
 
 export default function AnalyticsLoading() {
   return (
-    <div className="flex flex-col gap-6 px-8 py-8">
+    <div className="flex flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div className="space-y-2">
         <Skeleton className="h-3 w-20 rounded bg-white/5 before:bg-white/5 after:via-white/10" />
         <Skeleton className="h-9 w-40 rounded-lg bg-white/5 before:bg-white/5 after:via-white/10" />

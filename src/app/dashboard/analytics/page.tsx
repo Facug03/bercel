@@ -13,7 +13,7 @@ export default async function AnalyticsPage() {
   const analytics = await getAnalyticsForUser(session.user.id, 30);
 
   return (
-    <div className="flex flex-col gap-6 px-8 py-8">
+    <div className="flex flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div>
         <p className="text-xs tracking-[0.18em] text-white/45 uppercase">
           Dashboard

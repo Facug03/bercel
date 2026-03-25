@@ -42,7 +42,7 @@ export function DashboardClient({
   }
 
   return (
-    <div className="flex flex-col gap-6 px-8 py-8">
+    <div className="flex flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <ConfirmDialog
         confirmLabel="Eliminar"
         description={`¿Eliminar "${pendingDelete?.title}"? Esta acción no se puede deshacer.`}
@@ -55,13 +55,13 @@ export function DashboardClient({
       />
       {/* Projects list */}
       <Card
-        className="border border-white/10 bg-[#111]/90 p-5"
+        className="border border-white/10 bg-[#111]/90 p-4 sm:p-5"
         variant="default"
       >
-        <Card.Header className="flex items-center justify-between p-0 pb-3">
+        <Card.Header className="flex flex-col gap-3 p-0 pb-3 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-lg font-semibold">Proyectos ({total})</h2>
           <Link
-            className="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90"
+            className="inline-flex w-full justify-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90 sm:w-auto"
             href={
               initialUsername ? "/dashboard/projects/new" : "/dashboard/profile"
             }
@@ -88,14 +88,14 @@ export function DashboardClient({
                   className="rounded-xl border border-white/10 bg-white/5 p-3"
                   key={project.id}
                 >
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
                     <div>
                       <p className="font-medium">{project.title}</p>
                       <p className="font-mono text-xs text-white/50">
                         /{project.slug}
                       </p>
                     </div>
-                    <div className="flex shrink-0 items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:justify-end">
                       <span className="flex items-center gap-1 text-xs text-white/40">
                         <Eye aria-hidden size={12} />
                         {project.views.toLocaleString("es-AR")}
@@ -117,8 +117,8 @@ export function DashboardClient({
                     {new Date(project.updatedAt).toLocaleString("es-AR")}
                   </p>
 
-                  <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
+                  <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-wrap items-center gap-3">
                       <Link
                         className="text-sm text-white underline underline-offset-4"
                         href={`/dashboard/projects/${project.slug}`}
@@ -138,7 +138,7 @@ export function DashboardClient({
                     </div>
                     <Button
                       aria-label={`Eliminar "${project.title}"`}
-                      className="h-auto min-w-0 gap-1 px-2 py-1 text-xs text-red-400/50 hover:text-red-400"
+                      className="h-auto min-w-0 self-start gap-1 px-2 py-1 text-xs text-red-400/50 hover:text-red-400 sm:self-auto"
                       isDisabled={deletingId === project.id}
                       size="sm"
                       variant="ghost"

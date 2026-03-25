@@ -17,7 +17,7 @@ export default async function DashboardLayout({
   const profile = await getUserProfile(session.user.id);
 
   return (
-    <div className="flex h-screen bg-black text-white">
+    <div className="flex min-h-screen flex-col bg-black text-white md:h-screen md:flex-row">
       <DashboardSidebar
         userEmail={session.user.email}
         username={profile?.username ?? null}

@@ -137,7 +137,7 @@ export function ProjectEditorForm({
   return (
     <div className="flex h-full flex-col">
       {/* Toolbar */}
-      <div className="flex shrink-0 items-center gap-2 border-b border-white/10 bg-[#0d0d0d] px-4 py-2">
+      <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-white/10 bg-[#0d0d0d] px-3 py-2 sm:px-4">
         <Link
           className="shrink-0 text-xs text-white/35 transition hover:text-white/65"
           href="/dashboard"
@@ -149,11 +149,11 @@ export function ProjectEditorForm({
           {mode === "create" ? "Nuevo proyecto" : slug}
         </span>
 
-        <div className="flex flex-1 items-center justify-center gap-2">
+        <div className="order-last flex w-full items-center gap-2 sm:order-0 sm:w-auto sm:flex-1 sm:justify-center">
           {mode === "create" && (
             <TextField
               aria-label="Slug del proyecto"
-              className="w-32"
+              className="w-full sm:w-32"
               name="project-slug"
               value={slug}
               variant="secondary"
@@ -180,7 +180,7 @@ export function ProjectEditorForm({
           )}
           <TextField
             aria-label="Título del proyecto"
-            className="w-48"
+            className="w-full sm:w-48"
             name="project-title"
             value={title}
             variant="secondary"
@@ -231,17 +231,19 @@ export function ProjectEditorForm({
               : "Guardar"}
         </Button>
 
-        <output className="shrink-0 text-xs text-white/45">{message}</output>
+        <output className="w-full text-xs text-white/45 sm:w-auto">
+          {message}
+        </output>
       </div>
 
       {/* Split panel */}
-      <div className="flex min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         {/* Editor panel — same DOM node, only classes change to avoid remounting Monaco */}
         <div
           className={
             isEditorFullscreen
               ? "fixed inset-0 z-50 flex flex-col bg-[#1e1e1e]"
-              : "flex min-h-0 w-1/2 flex-col border-r border-white/10"
+              : "flex h-96 w-full flex-col border-b border-white/10 lg:h-auto lg:min-h-0 lg:w-1/2 lg:flex-1 lg:border-r lg:border-b-0"
           }
         >
           <div className="flex h-9 shrink-0 items-center justify-between border-b border-white/10 bg-[#111] px-3">
@@ -316,13 +318,14 @@ export function ProjectEditorForm({
           <div className="min-h-0 flex-1">
             <Editor
               defaultLanguage="html"
-              height="calc(100% - 28px)"
+              height="100%"
               options={{
                 minimap: { enabled: false },
                 fontSize: 13,
                 wordWrap: "on",
                 smoothScrolling: true,
                 scrollBeyondLastLine: false,
+                automaticLayout: true,
                 padding: { top: 12, bottom: 12 },
               }}
               theme="vs-dark"
@@ -342,12 +345,12 @@ export function ProjectEditorForm({
         </div>
 
         {/* Preview panel */}
-        <div className="flex min-h-0 w-1/2 flex-col">
+        <div className="flex h-88 w-full flex-col lg:h-auto lg:min-h-0 lg:w-1/2 lg:flex-1">
           <div className="flex h-9 shrink-0 items-center border-b border-white/10 bg-[#111] px-3">
             <span className="text-xs text-white/35">Preview</span>
           </div>
           <iframe
-            className="min-h-0 flex-1 bg-black"
+            className="h-full min-h-0 flex-1 bg-black"
             sandbox="allow-scripts"
             srcDoc={previewHtml}
             title="Preview"
