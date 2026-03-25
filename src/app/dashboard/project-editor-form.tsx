@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, Input, Label, TextField } from "@heroui/react";
 import Editor from "@monaco-editor/react";
 import {
   ExternalLink,
@@ -150,27 +151,38 @@ export function ProjectEditorForm({
 
         <div className="flex flex-1 items-center justify-center gap-2">
           {mode === "create" && (
-            <label className="sr-only" htmlFor="project-slug">
-              Slug del proyecto
-              <input
-                className="w-32 rounded border border-white/10 bg-white/5 px-2 py-1 text-xs text-white outline-none transition placeholder:text-white/30 focus:border-white/25"
-                id="project-slug"
-                onChange={(e) => setSlug(e.target.value.toLowerCase())}
+            <TextField
+              aria-label="Slug del proyecto"
+              className="w-32"
+              name="project-slug"
+              value={slug}
+              variant="secondary"
+              onChange={(v) => setSlug(v.toLowerCase())}
+            >
+              <Label className="sr-only">Slug del proyecto</Label>
+              <Input
+                autoComplete="off"
+                className="text-xs"
                 placeholder="slug"
-                value={slug}
+                spellCheck={false}
               />
-            </label>
+            </TextField>
           )}
-          <label className="sr-only" htmlFor="project-title">
-            Título del proyecto
-            <input
-              className="w-48 rounded border border-white/10 bg-white/5 px-2 py-1 text-xs text-white outline-none transition placeholder:text-white/30 focus:border-white/25"
-              id="project-title"
-              onChange={(e) => setTitle(e.target.value)}
+          <TextField
+            aria-label="Título del proyecto"
+            className="w-48"
+            name="project-title"
+            value={title}
+            variant="secondary"
+            onChange={setTitle}
+          >
+            <Label className="sr-only">Título del proyecto</Label>
+            <Input
+              autoComplete="off"
+              className="text-xs"
               placeholder="Título"
-              value={title}
             />
-          </label>
+          </TextField>
         </div>
 
         <label className="flex shrink-0 cursor-pointer items-center gap-1.5 text-xs text-white/45 transition hover:text-white/65 select-none">
@@ -185,28 +197,29 @@ export function ProjectEditorForm({
 
         {currentPath ? (
           <Link
+            aria-label={`Abrir ${currentPath} en nueva pestaña`}
             className="shrink-0 rounded p-1.5 text-white/35 transition hover:bg-white/8 hover:text-white/65"
             href={currentPath}
             target="_blank"
-            title={`Abrir ${currentPath}`}
           >
             <ExternalLink aria-hidden size={14} />
           </Link>
         ) : null}
 
-        <button
-          className="flex shrink-0 items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-black transition hover:bg-white/90 disabled:opacity-60"
-          disabled={isSaving}
-          type="button"
-          onClick={handleSaveProject}
+        <Button
+          className="flex shrink-0 items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-black"
+          isDisabled={isSaving}
+          size="sm"
+          variant="primary"
+          onPress={handleSaveProject}
         >
           <Save aria-hidden size={12} />
           {isSaving
-            ? "Deployando a 0 regiones..."
+            ? "Deployando a 0 regiones…"
             : mode === "create"
               ? "Crear"
               : "Guardar"}
-        </button>
+        </Button>
 
         <output className="shrink-0 text-xs text-white/45">{message}</output>
       </div>
@@ -267,24 +280,27 @@ export function ProjectEditorForm({
                 className="shrink-0 text-white/30"
                 size={13}
               />
-              <input
-                className="min-w-0 flex-1 bg-transparent text-xs text-white outline-none placeholder:text-white/25"
+              <Input
+                aria-label="Prompt de generación IA"
+                autoComplete="off"
+                className="min-w-0 flex-1 bg-transparent text-xs"
                 disabled={isGenerating}
-                placeholder="Describí tu página... (ej: landing para una pizzería)"
+                placeholder="Describí tu página… (ej: landing para una pizzería)"
+                spellCheck={false}
                 value={generatePrompt}
                 onChange={(e) => setGeneratePrompt(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") void handleGenerate();
                 }}
               />
-              <button
-                className="shrink-0 rounded bg-white px-2.5 py-1 text-[11px] font-semibold text-black transition hover:bg-white/90 disabled:opacity-50"
-                disabled={isGenerating || !generatePrompt.trim()}
-                type="button"
-                onClick={() => void handleGenerate()}
+              <Button
+                isDisabled={isGenerating || !generatePrompt.trim()}
+                size="sm"
+                variant="primary"
+                onPress={() => void handleGenerate()}
               >
-                {isGenerating ? "Generando..." : "Generar"}
-              </button>
+                {isGenerating ? "Generando…" : "Generar"}
+              </Button>
             </div>
           )}
           <div className="min-h-0 flex-1">

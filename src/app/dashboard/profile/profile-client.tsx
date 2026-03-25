@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card } from "@heroui/react";
+import { Button, Card, Input, Label, TextField } from "@heroui/react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -62,25 +62,29 @@ export function ProfileClient({
           <h2 className="text-base font-semibold">Cuenta</h2>
         </Card.Header>
         <Card.Content className="space-y-4 p-0">
-          <label className="block space-y-1">
-            <span className="text-sm text-white/55">Email</span>
-            <input
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-white/70 outline-none"
-              disabled
-              readOnly
-              value={userEmail}
-            />
-          </label>
+          <TextField
+            isDisabled
+            isReadOnly
+            value={userEmail}
+            variant="secondary"
+          >
+            <Label>Email</Label>
+            <Input />
+          </TextField>
 
-          <label className="block space-y-1">
-            <span className="text-sm text-white/70">Username</span>
-            <input
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none transition focus:border-white/30"
-              onChange={(event) => setUsernameInput(event.target.value)}
+          <TextField
+            name="username"
+            value={usernameInput}
+            variant="secondary"
+            onChange={setUsernameInput}
+          >
+            <Label>Username</Label>
+            <Input
+              autoComplete="username"
               placeholder="tu-username"
-              value={usernameInput}
+              spellCheck={false}
             />
-          </label>
+          </TextField>
 
           <p className="text-sm text-white/50">
             Tu base URL será:

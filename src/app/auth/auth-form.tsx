@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card } from "@heroui/react";
+import { Button, Card, Form, Input, Label, TextField } from "@heroui/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -113,40 +113,50 @@ export function AuthForm() {
             </button>
           </div>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          <Form className="space-y-4" onSubmit={handleSubmit}>
             {mode === "register" ? (
-              <label className="block space-y-1">
-                <span className="text-sm text-white/75">Nombre</span>
-                <input
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none transition focus:border-white/30"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  required
-                />
-              </label>
+              <TextField
+                className="w-full"
+                isRequired
+                name="name"
+                value={name}
+                variant="secondary"
+                onChange={setName}
+              >
+                <Label>Nombre</Label>
+                <Input autoComplete="name" />
+              </TextField>
             ) : null}
 
-            <label className="block space-y-1">
-              <span className="text-sm text-white/75">Email</span>
-              <input
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none transition focus:border-white/30"
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                required
-              />
-            </label>
+            <TextField
+              className="w-full"
+              isRequired
+              name="email"
+              type="email"
+              value={email}
+              variant="secondary"
+              onChange={setEmail}
+            >
+              <Label>Email</Label>
+              <Input autoComplete="email" spellCheck={false} />
+            </TextField>
 
-            <label className="block space-y-1">
-              <span className="text-sm text-white/75">Contraseña</span>
-              <input
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none transition focus:border-white/30"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                required
+            <TextField
+              className="w-full"
+              isRequired
+              name="password"
+              type="password"
+              value={password}
+              variant="secondary"
+              onChange={setPassword}
+            >
+              <Label>Contraseña</Label>
+              <Input
+                autoComplete={
+                  mode === "login" ? "current-password" : "new-password"
+                }
               />
-            </label>
+            </TextField>
 
             <Button
               className="w-full rounded-xl bg-white font-semibold text-black"
@@ -155,7 +165,7 @@ export function AuthForm() {
               variant="primary"
             >
               {isPending
-                ? "Procesando..."
+                ? "Procesando…"
                 : mode === "login"
                   ? "Entrar"
                   : "Crear cuenta"}
@@ -164,16 +174,18 @@ export function AuthForm() {
             <Button
               className="w-full rounded-xl border border-white/20 text-white"
               isDisabled={isPending}
-              onPress={handleGithubLogin}
               type="button"
               variant="outline"
+              onPress={handleGithubLogin}
             >
               Continuar con GitHub
             </Button>
-          </form>
+          </Form>
 
           {message ? (
-            <p className="mt-4 text-sm text-red-400/70">{message}</p>
+            <p className="mt-4 text-sm text-red-400/70" role="alert">
+              {message}
+            </p>
           ) : null}
         </Card.Content>
 

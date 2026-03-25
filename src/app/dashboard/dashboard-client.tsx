@@ -4,6 +4,7 @@ import { Button, Card } from "@heroui/react";
 import { Eye, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { deleteProjectAction } from "./actions";
 
 type ProjectSummary = {
@@ -26,18 +27,32 @@ export function DashboardClient({
   initialProjects,
 }: DashboardClientProps) {
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<{
+    id: number;
+    title: string;
+  } | null>(null);
   const total = initialProjects.length;
 
-  async function handleDelete(id: number, title: string) {
-    if (!confirm(`¿Eliminar "${title}"? Esta acción no se puede deshacer.`))
-      return;
-    setDeletingId(id);
-    await deleteProjectAction(id);
+  async function confirmDelete() {
+    if (!pendingDelete) return;
+    setDeletingId(pendingDelete.id);
+    setPendingDelete(null);
+    await deleteProjectAction(pendingDelete.id);
     setDeletingId(null);
   }
 
   return (
     <div className="flex flex-col gap-6 px-8 py-8">
+      <ConfirmDialog
+        confirmLabel="Eliminar"
+        description={`¿Eliminar "${pendingDelete?.title}"? Esta acción no se puede deshacer.`}
+        isDestructive
+        isOpen={!!pendingDelete}
+        isPending={deletingId !== null}
+        title="Eliminar proyecto"
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={confirmDelete}
+      />
       {/* Projects list */}
       <Card
         className="border border-white/10 bg-[#111]/90 p-5"
@@ -125,16 +140,22 @@ export function DashboardClient({
                         </Link>
                       ) : null}
                     </div>
-                    <button
+                    <Button
                       aria-label={`Eliminar "${project.title}"`}
-                      className="flex items-center gap-1 text-xs text-red-400/50 transition hover:text-red-400 disabled:opacity-30"
-                      disabled={deletingId === project.id}
-                      type="button"
-                      onClick={() => handleDelete(project.id, project.title)}
+                      className="h-auto min-w-0 gap-1 px-2 py-1 text-xs text-red-400/50 hover:text-red-400"
+                      isDisabled={deletingId === project.id}
+                      size="sm"
+                      variant="ghost"
+                      onPress={() =>
+                        setPendingDelete({
+                          id: project.id,
+                          title: project.title,
+                        })
+                      }
                     >
                       <Trash2 aria-hidden size={12} />
-                      {deletingId === project.id ? "Eliminando..." : "Eliminar"}
-                    </button>
+                      {deletingId === project.id ? "Eliminando…" : "Eliminar"}
+                    </Button>
                   </div>
                 </article>
               );
