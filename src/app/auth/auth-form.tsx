@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, Form, Input, Label, TextField } from "@heroui/react";
+import { Button, Card, Input, Label, TextField } from "@heroui/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -16,7 +16,7 @@ export function AuthForm() {
 
   const router = useRouter();
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage(null);
     setIsPending(true);
@@ -113,7 +113,7 @@ export function AuthForm() {
             </button>
           </div>
 
-          <Form className="space-y-4" onSubmit={handleSubmit}>
+          <form className="space-y-4" onSubmit={handleSubmit}>
             {mode === "register" ? (
               <TextField
                 className="w-full"
@@ -180,7 +180,7 @@ export function AuthForm() {
             >
               Continuar con GitHub
             </Button>
-          </Form>
+          </form>
 
           {message ? (
             <p className="mt-4 text-sm text-red-400/70" role="alert">

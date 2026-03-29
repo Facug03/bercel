@@ -49,7 +49,7 @@ export default async function UserProfilePage({ params }: Props) {
         {data.projects.length === 0 ? (
           <div className="py-20 text-center">
             <p className="text-white/40">Todavía no hay nada publicado.</p>
-            <p className="mt-1 text-xs text-white/20">Maybe.</p>
+            <p className="mt-1 text-xs text-white/20">Deploy pendiente.</p>
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

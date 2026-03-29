@@ -112,7 +112,7 @@ export default async function Home() {
               </p>
             </Card.Header>
             <Card.Content className="p-0 pt-2">
-              <p className="text-2xl font-semibold">99,2% de uptime*</p>
+              <p className="text-2xl font-semibold">99,2% de disponibilidad*</p>
               <p className="mt-2 text-sm text-white/60">
                 * cuando el server está prendido.
               </p>
@@ -148,7 +148,7 @@ export default async function Home() {
             </Card.Header>
             <Card.Content className="p-0 pt-2">
               <p className="text-2xl font-semibold">
-                Probablemente listo para prod
+                Probablemente listo para producción
               </p>
               <p className="mt-2 text-sm text-white/60">
                 Ideal para demos que parecen startup financiada.
@@ -157,7 +157,6 @@ export default async function Home() {
           </Card>
         </section>
 
-        {/* Recent projects feed */}
         {recentProjects.length > 0 && (
           <section className="mt-16 border-t border-white/5 pt-12">
             <div className="mb-6 flex items-center justify-between">
@@ -182,8 +181,6 @@ export default async function Home() {
                       <Link
                         className="text-white/45 transition hover:text-white/80"
                         href={`/${project.username}`}
-                        target="_blank"
-                        // onClick={(e) => e.stopPropagation()}
                       >
                         /{project.username}
                       </Link>

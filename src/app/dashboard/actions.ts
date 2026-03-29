@@ -57,6 +57,7 @@ export async function saveProjectAction(input: {
 
   revalidatePath("/dashboard");
   revalidatePath(`/dashboard/projects/${project.slug}`);
+  revalidatePath(`/${profile.username}`);
 
   return { project: { slug: project.slug } };
 }

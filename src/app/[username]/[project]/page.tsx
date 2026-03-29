@@ -44,7 +44,7 @@ export default async function PublicProjectPage({
     notFound();
   }
 
-  void incrementProjectViews(projectData.id);
+  void incrementProjectViews(projectData.id).catch(() => {});
 
   const isOwner = session?.user?.id === projectData.user_id;
 
@@ -52,6 +52,7 @@ export default async function PublicProjectPage({
     return (
       <iframe
         className="fixed inset-0 h-full w-full border-none"
+        referrerPolicy="no-referrer"
         sandbox="allow-scripts"
         srcDoc={projectData.html_content ?? ""}
         title={projectData.title}
@@ -81,6 +82,7 @@ export default async function PublicProjectPage({
       </div>
       <iframe
         className="fixed inset-0 top-10 h-[calc(100%-40px)] w-full border-none"
+        referrerPolicy="no-referrer"
         sandbox="allow-scripts"
         srcDoc={projectData.html_content ?? ""}
         title={projectData.title}

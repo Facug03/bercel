@@ -57,7 +57,7 @@ export function SessionMenu({
         className={`rounded-full border border-white/15 bg-white/5 p-1.5 ${className ?? ""}`}
       >
         <Avatar className="h-7 w-7" color="default" size="sm">
-          <Avatar.Fallback>?</Avatar.Fallback>
+          <Avatar.Fallback></Avatar.Fallback>
         </Avatar>
       </div>
     );
