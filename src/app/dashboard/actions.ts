@@ -15,8 +15,12 @@ export async function deleteProjectAction(
   const session = await getSession();
   if (!session?.user?.id) return { error: "No autenticado" };
 
+  const profile = await getUserProfile(session.user.id);
+  if (!profile?.username) return { error: "Primero definí tu username." };
+
   await deleteProject(session.user.id, projectId);
   revalidatePath("/dashboard");
+  revalidatePath(`/${profile.username}`);
   return {};
 }
 
@@ -27,6 +31,7 @@ export async function saveProjectAction(input: {
   title: string;
   htmlContent: string;
   isPublished: boolean;
+  isCreating?: boolean;
 }): Promise<SaveResult> {
   const session = await getSession();
   if (!session?.user?.id) return { error: "No autenticado" };
@@ -58,6 +63,10 @@ export async function saveProjectAction(input: {
   revalidatePath("/dashboard");
   revalidatePath(`/dashboard/projects/${project.slug}`);
   revalidatePath(`/${profile.username}`);
+
+  if (input.isCreating) {
+    revalidatePath("/");
+  }
 
   return { project: { slug: project.slug } };
 }

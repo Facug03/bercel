@@ -120,6 +120,7 @@ export function ProjectEditorForm({
       title,
       htmlContent,
       isPublished,
+      isCreating: mode === "create",
     });
 
     if ("error" in result) {
