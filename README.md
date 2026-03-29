@@ -8,7 +8,7 @@
 
 > Proyecto desarrollado para la [Hackathon CubePath 2026](https://github.com/midudev/hackaton-cubepath-2026), desplegado íntegramente en [CubePath](https://midu.link/cubepath).
 
-<img width="1920" height="1920" alt="MockupViews_1x_PNG_20260329_148" src="https://github.com/user-attachments/assets/f1284fcc-1c2b-4265-a223-44a0c04b30d6" />
+<img width="1000" height="1000" alt="MockupViews_1x_PNG_20260329_148" src="https://github.com/user-attachments/assets/f1284fcc-1c2b-4265-a223-44a0c04b30d6" />
 
 ---
 
