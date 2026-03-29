@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bercel
 
-## Getting Started
+**Bercel** es una plataforma donde los desarrolladores pueden crear y compartir proyectos web directamente desde el navegador, con un editor de código integrado y previsualización en tiempo real. Pensado como una alternativa simple y rápida para publicar demos, experimentos y proyectos personales.
 
-First, run the development server:
+> ⚠️ **Esto es una parodia.** El nombre es un chiste con [Vercel](https://vercel.com) — plataforma que yo mismo uso y recomiendo.
+
+🔗 **Demo en vivo:** [bercel.dev](https://bercel.dev)
+
+> Proyecto desarrollado para la [Hackathon CubePath 2026](https://github.com/midudev/hackaton-cubepath-2026), desplegado íntegramente en [CubePath](https://midu.link/cubepath).
+
+
+
+---
+
+## ¿Cómo se usa CubePath?
+
+La aplicación y la base de datos PostgreSQL están desplegadas en una VPS de **CubePath** usando **Dokploy** como plataforma de despliegue. CubePath provee la infraestructura (VPS) y Dokploy gestiona los contenedores y variables de entorno.
+
+---
+
+## Stack
+
+- **Next.js 16** — framework principal (app router)
+- **Better Auth** — autenticación (email/contraseña + GitHub OAuth)
+- **PostgreSQL** — base de datos (hosteada en CubePath via Dokploy)
+- **HeroUI + Tailwind CSS** — UI
+- **Monaco Editor** — editor de código en el navegador
+- **OpenAI / OpenRouter** — IA integrada
+
+---
+
+## Ejecutar localmente
+
+### Requisitos
+
+- [Bun](https://bun.sh) instalado
+- PostgreSQL accesible
+
+### 1. Clonar e instalar dependencias
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/Facug03/bercel
+cd bercel
+bun install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configurar variables de entorno
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cp .env.example .env
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Completá el `.env`:
 
-## Learn More
+```env
+BETTER_AUTH_SECRET=        # string aleatorio seguro
+BETTER_AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+DATABASE_URL=              # postgresql://user:password@host:5432/dbname
+GITHUB_CLIENT_ID=          # opcional, para login con GitHub
+GITHUB_CLIENT_SECRET=      # opcional
+OPENROUTER_API_KEY=        # opcional, para funciones de IA
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Correr migraciones
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Tablas de Better Auth
+bun run db:migrate
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Tablas de la app
+psql "$DATABASE_URL" -f db/migrations/001_app_schema.sql
+psql "$DATABASE_URL" -f db/migrations/002_add_views.sql
+psql "$DATABASE_URL" -f db/migrations/003_analytics.sql
+```
 
-## Deploy on Vercel
+### 4. Iniciar el servidor
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+bun run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+La app estará disponible en [http://localhost:3000](http://localhost:3000).
+
+---
