@@ -63,6 +63,7 @@ export async function saveProjectAction(input: {
   revalidatePath("/dashboard");
   revalidatePath(`/dashboard/projects/${project.slug}`);
   revalidatePath(`/${profile.username}`);
+  revalidatePath("/explore");
 
   if (input.isCreating) {
     revalidatePath("/");
