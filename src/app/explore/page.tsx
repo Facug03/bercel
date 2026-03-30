@@ -17,16 +17,23 @@ type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export const metadata = {
-  title: "Explorar proyectos — Bercel",
-};
+export async function generateMetadata({ searchParams }: Props) {
+  const params = await searchParams;
+  const q = typeof params.q === "string" ? params.q : "";
+  return {
+    title: q ? `"${q}" — Explorar — Bercel` : "Explorar proyectos — Bercel",
+  };
+}
 
 export default async function ExplorePage({ searchParams }: Props) {
   const params = await searchParams;
 
   const query = typeof params.q === "string" ? params.q : "";
   const sort: ExploreSort = isValidSort(params.sort) ? params.sort : "recent";
-  const page = Math.max(1, parseInt(typeof params.page === "string" ? params.page : "1", 10));
+  const page = Math.max(
+    1,
+    parseInt(typeof params.page === "string" ? params.page : "1", 10) || 1,
+  );
   const offset = (page - 1) * PAGE_SIZE;
 
   const { projects, total } = await searchPublicProjects({
@@ -100,9 +107,13 @@ export default async function ExplorePage({ searchParams }: Props) {
                   className="group flex flex-col justify-between rounded-xl border border-white/8 bg-white/3 p-4 transition hover:border-white/15 hover:bg-white/5"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">
+                    <Link
+                      className="block truncate text-sm font-medium transition hover:text-white/80"
+                      href={`/${project.username}/${project.slug}`}
+                      target="_blank"
+                    >
                       {project.title}
-                    </p>
+                    </Link>
                     <p className="mt-0.5 truncate font-mono text-xs text-white/30">
                       <Link
                         className="transition hover:text-white/60"

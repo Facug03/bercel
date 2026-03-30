@@ -457,9 +457,11 @@ export async function searchPublicProjects({
   const search = query.trim();
   const params: unknown[] = [limit, offset];
   let whereExtra = "";
+  let whereExtraCount = "";
   if (search) {
     params.push(`%${search}%`);
-    whereExtra = `AND (p.title ILIKE $${params.length} OR up.username ILIKE $${params.length})`;
+    whereExtra = `AND (p.title ILIKE $${params.length}::text OR up.username ILIKE $${params.length}::text)`;
+    whereExtraCount = `AND (p.title ILIKE $1::text OR up.username ILIKE $1::text)`;
   }
 
   const [rows, countRow] = await Promise.all([
@@ -485,7 +487,7 @@ export async function searchPublicProjects({
        FROM public.project p
        INNER JOIN public.user_profile up ON up.user_id = p.user_id
        WHERE p.is_published = TRUE
-       ${whereExtra}`,
+       ${whereExtraCount}`,
       search ? [params[2]] : [],
     ),
   ]);
