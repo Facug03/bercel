@@ -6,6 +6,7 @@ import {
   incrementProjectViews,
 } from "@/lib/projects";
 import { getSession } from "@/lib/session";
+import { FakeErrorOverlay } from "./fake-error-overlay";
 
 function extractHtmlTitle(html: string): string | null {
   const match = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
@@ -50,18 +51,22 @@ export default async function PublicProjectPage({
 
   if (!isOwner) {
     return (
-      <iframe
-        className="fixed inset-0 h-full w-full border-none"
-        referrerPolicy="no-referrer"
-        sandbox="allow-scripts"
-        srcDoc={projectData.html_content ?? ""}
-        title={projectData.title}
-      />
+      <>
+        <FakeErrorOverlay />
+        <iframe
+          className="fixed inset-0 h-full w-full border-none"
+          referrerPolicy="no-referrer"
+          sandbox="allow-scripts"
+          srcDoc={projectData.html_content ?? ""}
+          title={projectData.title}
+        />
+      </>
     );
   }
 
   return (
     <>
+      <FakeErrorOverlay />
       <div className="fixed inset-x-0 top-0 z-50 flex h-10 items-center justify-between border-b border-white/10 bg-black/80 px-4 backdrop-blur-sm">
         <p className="font-mono text-xs text-white/50">
           <Link
