@@ -21,6 +21,7 @@ export async function deleteProjectAction(
   await deleteProject(session.user.id, projectId);
   revalidatePath("/dashboard");
   revalidatePath(`/${profile.username}`);
+  revalidatePath("/");
   return {};
 }
 
